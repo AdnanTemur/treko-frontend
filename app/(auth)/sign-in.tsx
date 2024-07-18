@@ -1,11 +1,21 @@
 import { useState } from "react";
 import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, ScrollView, Dimensions, Alert, Image } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Dimensions,
+  Alert,
+  Image,
+  Button,
+  TextInput,
+} from "react-native";
 import FormField from "../../components/FormField";
-
 import { images } from "../../constants";
 import CustomButton from "@/components/CustomButton";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 // import { getCurrentUser, signIn } from "../../lib/appwrite";
 // import { useGlobalContext } from "../../context/GlobalProvider";
 
@@ -38,10 +48,57 @@ const SignIn = () => {
     // }
   };
 
+  // start
+  const [inputValue, setInputValue] = useState("");
+  const [storedValue, setStoredValue] = useState("");
+
+  const storeData = async () => {
+    try {
+      await AsyncStorage.setItem("@my_key", inputValue);
+      console.log("Data stored successfully");
+    } catch (e) {
+      console.error("Failed to save the data to the storage", e);
+    }
+  };
+
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem("@my_key");
+      if (value !== null) {
+        setStoredValue(value);
+        console.log("Data retrieved successfully");
+      }
+    } catch (e) {
+      console.error("Failed to fetch the data from storage", e);
+    }
+  };
+  const removeData = async () => {
+    try {
+      await AsyncStorage.removeItem("@my_key");
+      console.log("Data removed successfully");
+    } catch (e) {
+      console.error("Failed to remove the data from storage", e);
+    }
+  };
+  // start
   return (
-    <SafeAreaView className="bg-white h-full px-6">
+    <SafeAreaView className="bg-white px-6">
       <ScrollView>
-        <View className="w-full flex justify-center items-center h-full ">
+        {/* start */}
+        <View>
+          <TextInput
+            placeholder="Type something"
+            value={inputValue}
+            onChangeText={setInputValue}
+          />
+          <Button title="Store Data" onPress={storeData} />
+          <Button title="Get Data" onPress={getData} />
+          <Button title="Get remove" onPress={removeData} />
+
+          <Text>Stored Value: {storedValue}</Text>
+        </View>
+        {/* start */}
+        <View className="w-full flex justify-center items-center ">
           <Image
             source={images.logo}
             resizeMode="contain"
