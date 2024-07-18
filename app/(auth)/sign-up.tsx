@@ -9,6 +9,8 @@ import CustomButton from "@/components/CustomButton";
 // import { getCurrentUser, signIn } from "../../lib/appwrite";
 // import { useGlobalContext } from "../../context/GlobalProvider";
 
+const baseURL = process.env.EXPO_PUBLIC_BACKEND_URL;
+
 const SignUp = () => {
   // const { setUser, setIsLogged } = useGlobalContext();
   const [isSubmitting, setSubmitting] = useState(false);
