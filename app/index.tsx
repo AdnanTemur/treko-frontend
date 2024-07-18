@@ -2,16 +2,19 @@ import { StatusBar } from "expo-status-bar";
 import { Redirect, router } from "expo-router";
 import { View, Text, Image, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ActivityIndicator } from "react-native";
 
 import { images } from "../constants";
 import CustomButton from "@/components/CustomButton";
+import useAsyncStorage from "@/hooks/useAuth";
 // import { CustomButton, Loader } from "../components";
 // import { useGlobalContext } from "../context/GlobalProvider";
 
 const Welcome = () => {
   // const { loading, isLogged } = useGlobalContext();
+  const [user, loading] = useAsyncStorage("@user");
 
-  // if (!loading && isLogged) return <Redirect href="/home" />;
+  if (!loading && user) return <Redirect href="/home" />;
 
   return (
     <SafeAreaView className="bg-white h-full">
