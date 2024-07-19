@@ -104,11 +104,13 @@ const ChatList = () => {
               onPress={() => setModalVisible(false)}
               className="absolute top-2 right-2"
             >
-              <Text className="text-2xl">×</Text>
+              <Text className="text-5xl">×</Text>
             </TouchableOpacity>
-            <Text className="text-lg font-bold mb-4">Trace employee</Text>
+            <Text className="text-lg font-bold mb-4 text-center">
+              Trace employee
+            </Text>
             <ScrollView>
-              <Text className="text-sm text-gray-600 mb-4">
+              <Text className="text-sm text-gray-600 mb-4 text-center">
                 Lorem ipsum dolor sit amet consectetur. Sagittis pellentesque eu
                 sem sodales ut. Lorem sed mi duis nibh at fringilla nunc
                 consequat parturient. In aliquam quis aliquam libero in. Vel

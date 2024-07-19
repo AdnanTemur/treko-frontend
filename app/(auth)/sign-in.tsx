@@ -123,10 +123,12 @@ const SignIn = () => {
               marginTop: 10,
             }}
           >
-            <Text style={{ fontSize: 16, color: "#888", marginRight: 10 }}>
-              Don't have an account?
-            </Text>
-            <Text style={{ fontSize: 16, color: "#007BFF" }}>Sign Up</Text>
+            <Link href={"/sign-up"}>
+              <Text style={{ fontSize: 16, color: "#888", marginRight: 10 }}>
+                Don't have an account?
+              </Text>
+              <Text style={{ fontSize: 16, color: "#007BFF" }}>Sign Up</Text>
+            </Link>
           </View>
         </View>
       </ScrollView>

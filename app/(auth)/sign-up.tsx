@@ -66,7 +66,6 @@ const SignUp = () => {
       <ScrollView>
         <View className="w-full flex justify-center items-center h-full ">
           <Image source={images.logo} className="w-[100px] h-[100px]" />
-          <Text>{baseURL}</Text>
           <Text className="text-2xl font-semibold text-black mt-3 mb-10 font-psemibold">
             Treko Registration
           </Text>

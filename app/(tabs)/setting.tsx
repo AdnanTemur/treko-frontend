@@ -1,9 +1,20 @@
 import React from "react";
-import { Text, View, Button, Alert } from "react-native";
+import {
+  Text,
+  View,
+  Button,
+  Alert,
+  ActivityIndicator,
+  Image,
+} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
+import useAsyncStorage from "@/hooks/useAuth";
+import { primary } from "@/constants/colors";
 
 const Setting = () => {
+  const [user, loading]: any = useAsyncStorage("@user");
+
   const handleLogout = async () => {
     try {
       // Remove access token and user information from AsyncStorage
@@ -20,12 +31,41 @@ const Setting = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
+
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ fontSize: 24, marginBottom: 20 }}>
-        Settings Page Coming Soon
-      </Text>
-      <Button title="Logout" onPress={handleLogout} />
+    <View className="flex-1 p-5 bg-white">
+      <View className="items-center mb-10">
+        <Text className="text-3xl font-bold mb-4">Settings</Text>
+        {user && (
+          <>
+            {user.avatar ? (
+              <Image
+                source={{ uri: user.avatar }}
+                className="w-24 h-24 rounded-full mb-4"
+              />
+            ) : (
+              <View className="w-24 h-24 rounded-full bg-gray-300 mb-4 justify-center items-center">
+                <Text className="text-2xl font-bold text-white">
+                  {user.name.charAt(0).toUpperCase()}
+                </Text>
+              </View>
+            )}
+            <Text className="text-xl mb-2">Name: {user.name}</Text>
+            <Text className="text-sm mb-2">Email: {user.email}</Text>
+            <Text className="text-sm mb-2">Role: {user.role}</Text>
+          </>
+        )}
+      </View>
+      <View className="mt-auto mb-10">
+        <Button title="Logout" onPress={handleLogout} color={primary} />
+      </View>
     </View>
   );
 };
