@@ -4,10 +4,12 @@ import { Image, Text, View } from "react-native";
 
 import { icons } from "../../constants";
 import { primary, secondary } from "@/constants/colors";
+import useAsyncStorage from "@/hooks/useAuth";
+import Loader from "@/components/Loader";
 // import { Loader } from "../../components";
 // import { useGlobalContext } from "../../context/GlobalProvider";
 
-const TabIcon = ({ icon, color, name, focused }) => {
+const TabIcon = ({ icon, color, name, focused }: any) => {
   return (
     <View className="flex items-center justify-center gap-2">
       <Image
@@ -29,9 +31,8 @@ const TabIcon = ({ icon, color, name, focused }) => {
 };
 
 const TabLayout = () => {
-  //   const { loading, isLogged } = useGlobalContext();
-
-  //   if (!loading && !isLogged) return <Redirect href="/sign-in" />;
+  const [user, loading] = useAsyncStorage("@user");
+  if (!loading && !user) return <Redirect href="/sign-in" />;
 
   return (
     <>
@@ -46,6 +47,7 @@ const TabLayout = () => {
             borderTopColor: "#232533",
             height: 84,
           },
+          headerShown: false,
         }}
       >
         <Tabs.Screen
@@ -112,8 +114,8 @@ const TabLayout = () => {
         />
       </Tabs>
 
-      {/* <Loader isLoading={loading} /> */}
-      <StatusBar backgroundColor="#161622" style="light" />
+      <Loader isLoading={loading} />
+      <StatusBar backgroundColor="#09648C" style="light" />
     </>
   );
 };

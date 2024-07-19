@@ -14,6 +14,14 @@ import play from "../assets/icons/play.png";
 import setting from "../assets/icons/setting.png";
 import chat from "../assets/icons/chat.png";
 import location from "../assets/icons/location.png";
+import back from "../assets/figma/back.svg";
+import theme from "../assets/figma/theme.png";
+import settingBig from "../assets/figma/setting.png";
+import person from "../assets/figma/person.png";
+import rightarrow from "../assets/figma/rightarrow.png";
+import add from "../assets/figma/add.png";
+import whitepeople from "../assets/figma/whitepeople.png";
+import bell from "../assets/figma/bell.png";
 
 export default {
   play,
@@ -32,4 +40,12 @@ export default {
   setting,
   chat,
   location,
+  back,
+  rightarrow,
+  person,
+  theme,
+  settingBig,
+  add,
+  whitepeople,
+  bell,
 };
