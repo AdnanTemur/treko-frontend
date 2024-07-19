@@ -1,8 +1,7 @@
 import { icons } from "@/constants";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  StyleSheet,
   Text,
   View,
   FlatList,
@@ -10,38 +9,38 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
+  Alert,
 } from "react-native";
+import axios from "axios";
+import useAsyncStorage from "@/hooks/useAuth";
 
-const employees = [
-  {
-    id: "1",
-    name: "Clair Jhon",
-    position: "Project Manager",
-    workTime: "8:00 am - 5:00 pm",
-    image:
-      "https://cdn.pixabay.com/photo/2023/04/21/15/42/portrait-7942151_640.jpg",
-  },
-  {
-    id: "2",
-    name: "Jhon Jhon",
-    position: "IT Manager",
-    workTime: "8:00 am - 5:00 pm",
-    image:
-      "https://images.unsplash.com/photo-1575936123452-b67c3203c357?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-  },
-  {
-    id: "3",
-    name: "Steve Step",
-    position: "Project Manager",
-    workTime: "8:00 am - 5:00 pm",
-    image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQlROcXWBsxzaZwXERUSfV6eD92_-KLFAvjbg&usqp=CAU",
-  },
-];
+const baseURL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/get-all-employees`;
 
 const ChatList = () => {
+  const [employees, setEmployees] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  const [accessToken, loading]: any = useAsyncStorage("@access_token");
+
+  const fetchEmployees = async () => {
+    try {
+      const response = await axios.get(baseURL, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      setEmployees(response.data.employees);
+    } catch (error) {
+      Alert.alert("Error", "Failed to fetch employees");
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (accessToken) {
+      fetchEmployees();
+    }
+  }, [accessToken]);
 
   const handleEmployeePress = (employee: any) => {
     setSelectedEmployee(employee);
@@ -52,13 +51,17 @@ const ChatList = () => {
     <TouchableOpacity onPress={() => handleEmployeePress(item)}>
       <View className="flex-row justify-between items-center bg-[#F8F8F8] p-4 rounded-lg mb-4">
         <Image
-          source={{ uri: item.image }}
+          source={{ uri: item.avatar }}
           className="w-12 h-12 rounded-full"
         />
         <View className="flex-1 ml-4">
           <Text className="text-lg font-bold">{item.name}</Text>
-          <Text className="text-sm text-gray-600">{item.position}</Text>
-          <Text className="text-sm text-gray-600">{item.workTime}</Text>
+          <Text className="text-sm text-gray-600">
+            {item.position || "Employee"}
+          </Text>
+          <Text className="text-sm text-gray-600">
+            {item.workTime || "8:00 am - 5:00 pm"}
+          </Text>
         </View>
         <Image
           resizeMode="contain"
@@ -89,7 +92,7 @@ const ChatList = () => {
       <FlatList
         data={employees}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item: any) => item._id}
       />
 
       <Modal
@@ -143,5 +146,3 @@ const ChatList = () => {
 };
 
 export default ChatList;
-
-const styles = StyleSheet.create({});

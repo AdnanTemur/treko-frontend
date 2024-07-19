@@ -12,11 +12,14 @@ import {
 import FormField from "../../components/FormField";
 import { images } from "../../constants";
 import CustomButton from "@/components/CustomButton";
+import ImagePickerExample from "@/components/ImagePicker";
 
 const baseURL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/register`;
 
 const SignUp = () => {
   const [isSubmitting, setSubmitting] = useState(false);
+  const [getAvatar, setGetAvatar] = useState<any>(null);
+  console.log(getAvatar, "getAvatar");
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -25,7 +28,13 @@ const SignUp = () => {
   });
 
   const submit = async () => {
-    if (!form.name || !form.email || !form.password || !form.confirmPassword) {
+    if (
+      !form.name ||
+      !form.email ||
+      !form.password ||
+      !form.confirmPassword ||
+      !getAvatar
+    ) {
       Alert.alert("Error", "Please fill in all fields");
       return;
     }
@@ -38,12 +47,30 @@ const SignUp = () => {
     setSubmitting(true);
 
     try {
+      const formData = new FormData();
+      formData.append("name", form.name);
+      formData.append("email", form.email);
+      formData.append("password", form.password);
+      formData.append("confirmPassword", form.confirmPassword);
+
+      if (getAvatar) {
+        const filename = getAvatar.split("/").pop();
+        const match = /\.(\w+)$/.exec(filename || "");
+        const type = match ? `image/${match[1]}` : `image`;
+
+        formData.append("avatar", {
+          uri: getAvatar,
+          name: filename,
+          type,
+        } as any);
+      }
+
       const response = await fetch(baseURL, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "multipart/form-data",
         },
-        body: JSON.stringify(form),
+        body: formData,
       });
 
       const data = await response.json();
@@ -65,11 +92,13 @@ const SignUp = () => {
     <SafeAreaView className="bg-white h-full px-6">
       <ScrollView>
         <View className="w-full flex justify-center items-center h-full ">
-          <Image source={images.logo} className="w-[100px] h-[100px]" />
-          <Text className="text-2xl font-semibold text-black mt-3 mb-10 font-psemibold">
-            Treko Registration
-          </Text>
-
+          <View className="flex flex-row items-start">
+            <Image source={images.logo} className="w-[60px] h-[60px]" />
+            <Text className="text-2xl font-semibold text-black mt-3 mb-4 font-psemibold">
+              Treko Registration
+            </Text>
+          </View>
+          <ImagePickerExample setGetAvatar={setGetAvatar} />
           <FormField
             title=""
             value={form.name}
@@ -88,7 +117,6 @@ const SignUp = () => {
             placeholder={"Your Email"}
             secureTextEntry={undefined}
           />
-
           <FormField
             title=""
             placeholder={"Password"}
@@ -112,13 +140,13 @@ const SignUp = () => {
             <ActivityIndicator
               size="large"
               color="#0000ff"
-              className="mt-10 w-full"
+              className="mt-4 w-full"
             />
           ) : (
             <CustomButton
               title="Register"
               handlePress={submit}
-              containerStyles="mt-10 w-full"
+              containerStyles="mt-4 w-full"
               isLoading={isSubmitting}
             />
           )}
