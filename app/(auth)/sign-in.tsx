@@ -81,7 +81,7 @@ const SignIn = () => {
               fontWeight: "bold",
               textAlign: "center",
               marginTop: 20,
-              marginBottom: 60,
+              marginBottom: 100,
             }}
           >
             Log in to continue
@@ -95,14 +95,17 @@ const SignIn = () => {
             keyboardType="email-address"
             secureTextEntry={undefined}
           />
+          <View className="h-3" />
           <FormField
             title=""
             placeholder="Password"
             value={form.password}
             handleChangeText={(password: any) => setForm({ ...form, password })}
-            otherStyles={{ marginTop: 10 }}
+            otherStyles={{ marginTop: 20 }}
             secureTextEntry={true}
           />
+          <View className="h-7" />
+
           {isSubmitting ? (
             <ActivityIndicator
               size="large"
@@ -116,20 +119,20 @@ const SignIn = () => {
               containerStyles={{ marginTop: 20 }}
             />
           )}
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              marginTop: 10,
-            }}
+          <Link
+            href="/sign-up"
+            className="text-sm text-dark mt-4 font-psemibold text-center"
           >
-            <Link href={"/sign-up"}>
-              <Text style={{ fontSize: 16, color: "#888", marginRight: 10 }}>
-                Don't have an account?
-              </Text>
-              <Text style={{ fontSize: 16, color: "#007BFF" }}>Sign Up</Text>
-            </Link>
-          </View>
+            {" "}
+            <Text> Don't have an account?</Text>
+          </Link>
+          <Link
+            href="/sign-up"
+            className="text-sm text-primary font-psemibold text-center"
+          >
+            {" "}
+            <Text> Sign Up</Text>
+          </Link>
         </View>
       </ScrollView>
     </SafeAreaView>

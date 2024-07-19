@@ -1,12 +1,21 @@
 import React from "react";
 import MapView from "react-native-maps";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Location() {
   return (
-    <View style={styles.container}>
-      <MapView style={styles.map} />
-    </View>
+    <SafeAreaView className="bg-white h-full">
+      <ScrollView
+        contentContainerStyle={{
+          height: "100%",
+        }}
+      >
+        <View style={styles.container}>
+          <MapView style={styles.map} />
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

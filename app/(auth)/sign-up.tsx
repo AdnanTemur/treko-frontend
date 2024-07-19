@@ -91,10 +91,12 @@ const SignUp = () => {
   return (
     <SafeAreaView className="bg-white h-full px-6">
       <ScrollView>
+        <View className="h-10" />
+
         <View className="w-full flex justify-center items-center h-full ">
-          <View className="flex flex-row items-start">
+          <View className="flex flex-row items-center">
             <Image source={images.logo} className="w-[60px] h-[60px]" />
-            <Text className="text-2xl font-semibold text-black mt-3 mb-4 font-psemibold">
+            <Text className="text-2xl font-semibold text-black  font-psemibold">
               Treko Registration
             </Text>
           </View>
@@ -103,7 +105,7 @@ const SignUp = () => {
             title=""
             value={form.name}
             handleChangeText={(e: any) => setForm({ ...form, name: e })}
-            otherStyles=""
+            otherStyles="mt-2"
             keyboardType="default"
             placeholder={"Name"}
             secureTextEntry={undefined}
@@ -112,7 +114,7 @@ const SignUp = () => {
             title=""
             value={form.email}
             handleChangeText={(e: any) => setForm({ ...form, email: e })}
-            otherStyles=""
+            otherStyles="mt-2"
             keyboardType="email-address"
             placeholder={"Your Email"}
             secureTextEntry={undefined}
@@ -122,7 +124,7 @@ const SignUp = () => {
             placeholder={"Password"}
             value={form.password}
             handleChangeText={(e: any) => setForm({ ...form, password: e })}
-            otherStyles={""}
+            otherStyles="mt-2"
             secureTextEntry
           />
           <FormField
@@ -132,7 +134,7 @@ const SignUp = () => {
             handleChangeText={(e: any) =>
               setForm({ ...form, confirmPassword: e })
             }
-            otherStyles={""}
+            otherStyles="mt-2"
             secureTextEntry
           />
 
@@ -150,19 +152,21 @@ const SignUp = () => {
               isLoading={isSubmitting}
             />
           )}
+          <Link
+            href="/sign-in"
+            className="text-sm text-dark mt-4 font-psemibold"
+          >
+            {" "}
+            <Text>Already have an account?</Text>
+          </Link>
+          <Link href="/sign-in" className="text-sm text-primary font-psemibold">
+            {" "}
+            <Text> Login?</Text>
+          </Link>
 
           <View className="flex justify-center pt-5 flex-row gap-2">
-            <Link
-              href="/sign-in"
-              className="text-sm text-secondary font-pregular"
-            >
+            <Link href="/sign-in" className="text-sm text-blacks font-pregular">
               Already have an account?
-            </Link>
-            <Link
-              href="/sign-in"
-              className="text-sm text-primary font-psemibold"
-            >
-              Login?
             </Link>
           </View>
         </View>
