@@ -137,7 +137,7 @@ const ChatList = () => {
                 <TouchableOpacity
                   onPress={() => {
                     setModalVisible(false);
-                    router.push("/chat-list");
+                    router.push("/chat");
                   }}
                   className="bg-primary rounded-lg p-4"
                 >
