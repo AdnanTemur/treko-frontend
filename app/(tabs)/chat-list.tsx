@@ -1,5 +1,3 @@
-import { icons } from "@/constants";
-import { router } from "expo-router";
 import React, { useEffect, useState } from "react";
 import {
   Text,
@@ -14,14 +12,21 @@ import {
 import axios from "axios";
 import useAsyncStorage from "@/hooks/useAuth";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { icons } from "@/constants";
+import { router } from "expo-router";
+import EmployeeListItem from "@/components/molecules/EmployeeListItem";
+import SearchBar from "@/components/SearchBar";
 
 const baseURL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/get-all-employees`;
 
 const ChatList = () => {
+  const [user]: any = useAsyncStorage("@user");
   const [employees, setEmployees] = useState([]);
+  const [filteredEmployees, setFilteredEmployees] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [accessToken, loading]: any = useAsyncStorage("@access_token");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchEmployees = async () => {
     try {
@@ -30,7 +35,13 @@ const ChatList = () => {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      setEmployees(response.data.employees);
+
+      // Exclude the current user from the employees list
+      const filtered = response.data.employees.filter(
+        (employee: any) => employee.email !== user.email
+      );
+      setEmployees(filtered);
+      setFilteredEmployees(filtered);
     } catch (error) {
       Alert.alert("Error", "Failed to fetch employees");
       console.error(error);
@@ -43,34 +54,21 @@ const ChatList = () => {
     }
   }, [accessToken]);
 
+  useEffect(() => {
+    // Apply search
+    const result = employees.filter((employee: any) =>
+      employee.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredEmployees(result);
+  }, [searchQuery, employees]);
+
   const handleEmployeePress = (employee: any) => {
     setSelectedEmployee(employee);
     setModalVisible(true);
   };
 
   const renderItem = ({ item }: any) => (
-    <TouchableOpacity onPress={() => handleEmployeePress(item)}>
-      <View className="flex-row justify-between items-center bg-[#F8F8F8] p-4 rounded-lg mb-4">
-        <Image
-          source={{ uri: item.avatar }}
-          className="w-12 h-12 rounded-full"
-        />
-        <View className="flex-1 ml-4">
-          <Text className="text-lg font-bold">{item.name}</Text>
-          <Text className="text-sm text-gray-600">
-            {item.position || "Employee"}
-          </Text>
-          <Text className="text-sm text-gray-600">
-            {item.workTime || "8:00 am - 5:00 pm"}
-          </Text>
-        </View>
-        <Image
-          resizeMode="contain"
-          className="w-6 h-6"
-          source={icons.rightarrow}
-        />
-      </View>
-    </TouchableOpacity>
+    <EmployeeListItem item={item} onPress={handleEmployeePress} />
   );
 
   return (
@@ -95,8 +93,11 @@ const ChatList = () => {
             />
           </TouchableOpacity>
         </View>
+
+        <SearchBar searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+
         <FlatList
-          data={employees}
+          data={filteredEmployees}
           renderItem={renderItem}
           keyExtractor={(item: any) => item._id}
         />
@@ -127,8 +128,7 @@ const ChatList = () => {
                 </Text>
                 <TouchableOpacity
                   onPress={() => {
-                    setModalVisible(false);
-                    router.push("/location");
+                    Alert.alert("Coming Soon");
                   }}
                   className="bg-primary rounded-lg p-4 mb-4"
                 >
@@ -137,7 +137,7 @@ const ChatList = () => {
                 <TouchableOpacity
                   onPress={() => {
                     setModalVisible(false);
-                    router.push("/chat");
+                    router.push("/employee-chat");
                   }}
                   className="bg-primary rounded-lg p-4"
                 >
