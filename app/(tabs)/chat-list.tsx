@@ -59,8 +59,6 @@ const ChatList = () => {
   };
 
   const handleNavigate = () => {
-    console.log(selectedEmployee?._id, "selectedEmployee");
-
     const serializedEmployees = JSON.stringify(selectedEmployee?._id);
     router.push({
       pathname: `/employee-chat`,

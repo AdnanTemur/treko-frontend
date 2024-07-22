@@ -38,17 +38,20 @@ const EmployeeChat = () => {
   const [error, setError] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const scrollViewRef = useRef<ScrollView>(null);
-
   useEffect(() => {
     const fetchMessages = async () => {
-      if (!employeeId || !accessToken || isLoading) return;
+      if (!employeeId || !accessToken || isLoading || !user) return;
       try {
         const jwtToken = accessToken;
+        const userId = user._id;
+        const coworkerId = JSON.parse(employeeId);
         const response = await axios.get(
-          `${process.env.EXPO_PUBLIC_BACKEND_URL}/coworker-chats/${JSON.parse(
-            employeeId
-          )}/messages`,
+          `${process.env.EXPO_PUBLIC_BACKEND_URL}/coworker-chats/messages`,
           {
+            params: {
+              userId: userId,
+              coworkerId: coworkerId,
+            },
             headers: {
               Authorization: `Bearer ${jwtToken}`,
               "Content-Type": "application/json",
@@ -82,8 +85,7 @@ const EmployeeChat = () => {
     };
 
     fetchMessages();
-  }, [employeeId, accessToken, isLoading]);
-
+  }, [employeeId, accessToken, isLoading, user]);
   useEffect(() => {
     const handleReceiveMessage = ({ senderId, receiverId, message }: any) => {
       if (message && message.text) {
