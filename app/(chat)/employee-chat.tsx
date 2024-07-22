@@ -12,15 +12,17 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import axios from "axios";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import useAsyncStorage from "@/hooks/useAuth";
 import { Ionicons } from "@expo/vector-icons";
 import { io } from "socket.io-client";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import Greeting from "@/components/Greeting";
 
 const socket = io(process.env.EXPO_PUBLIC_SOCKET_URL || "");
 
 socket.on("connect", () => {
-  console.log("Connected to server");
+  console.log("Connected to server", socket.id);
 });
 
 socket.on("disconnect", () => {
@@ -134,16 +136,6 @@ const EmployeeChat = () => {
       messageText: newMessage.trim(),
     });
 
-    setSentMessages((prevMessages: any) => [
-      ...prevMessages,
-      {
-        senderId,
-        receiverId: JSON.parse(employeeId),
-        text: newMessage.trim(),
-        timestamp: new Date(),
-      },
-    ]);
-
     setNewMessage("");
   };
 
@@ -163,13 +155,22 @@ const EmployeeChat = () => {
     );
   }
 
-  // Combine and sort messages for display
+  // Combine and sort messages for display, filtering out duplicates by timestamp
   const combinedMessages = [
     ...receivedMessages.map((msg) => ({ ...msg, type: "received" })),
     ...sentMessages.map((msg) => ({ ...msg, type: "sent" })),
-  ].sort(
-    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
-  );
+  ]
+    .filter(
+      (message, index, self) =>
+        index ===
+        self.findIndex(
+          (m) => m.timestamp === message.timestamp && m.text === message.text
+        )
+    )
+    .sort(
+      (a, b) =>
+        new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
 
   return (
     <KeyboardAvoidingView
@@ -177,7 +178,18 @@ const EmployeeChat = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <SafeAreaView style={styles.container}>
-        <Text style={styles.headerText}>Chat</Text>
+        <View className="flex-row justify-between items-center  p-5">
+          <TouchableOpacity>
+            <AntDesign
+              onPress={() => router.push("/home")}
+              name="arrowleft"
+              size={24}
+              color="black"
+            />
+          </TouchableOpacity>
+          <Text style={styles.headerText}>Chat</Text>
+          <Greeting />
+        </View>
         <ScrollView
           style={styles.chatContainer}
           ref={scrollViewRef}
