@@ -38,6 +38,7 @@ const EmployeeChat = () => {
   const [error, setError] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const scrollViewRef = useRef<ScrollView>(null);
+
   useEffect(() => {
     const fetchMessages = async () => {
       if (!employeeId || !accessToken || isLoading || !user) return;
@@ -86,6 +87,7 @@ const EmployeeChat = () => {
 
     fetchMessages();
   }, [employeeId, accessToken, isLoading, user]);
+
   useEffect(() => {
     const handleReceiveMessage = ({ senderId, receiverId, message }: any) => {
       if (message && message.text) {
@@ -161,6 +163,14 @@ const EmployeeChat = () => {
     );
   }
 
+  // Combine and sort messages for display
+  const combinedMessages = [
+    ...receivedMessages.map((msg) => ({ ...msg, type: "received" })),
+    ...sentMessages.map((msg) => ({ ...msg, type: "sent" })),
+  ].sort(
+    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+  );
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -175,35 +185,27 @@ const EmployeeChat = () => {
             scrollViewRef.current?.scrollToEnd({ animated: true })
           }
         >
-          {receivedMessages.length === 0 && sentMessages.length === 0 ? (
+          {combinedMessages.length === 0 ? (
             <View style={styles.emptyState}>
               <Text>No messages to display</Text>
             </View>
           ) : (
-            <>
-              {receivedMessages.map((message: any, id: any) => (
-                <View
-                  key={id}
-                  style={[styles.messageContainer, styles.receivedMessage]}
-                >
-                  <Text>{message.text}</Text>
-                  <Text style={styles.timestamp}>
-                    {new Date(message.timestamp).toLocaleString()}
-                  </Text>
-                </View>
-              ))}
-              {sentMessages.map((message: any, id: any) => (
-                <View
-                  key={id}
-                  style={[styles.messageContainer, styles.sentMessage]}
-                >
-                  <Text>{message.text}</Text>
-                  <Text style={styles.timestamp}>
-                    {new Date(message.timestamp).toLocaleString()}
-                  </Text>
-                </View>
-              ))}
-            </>
+            combinedMessages.map((message: any, id: any) => (
+              <View
+                key={id}
+                style={[
+                  styles.messageContainer,
+                  message.type === "received"
+                    ? styles.receivedMessage
+                    : styles.sentMessage,
+                ]}
+              >
+                <Text>{message.text}</Text>
+                <Text style={styles.timestamp}>
+                  {new Date(message.timestamp).toLocaleString()}
+                </Text>
+              </View>
+            ))
           )}
         </ScrollView>
         <View style={styles.inputContainer}>
