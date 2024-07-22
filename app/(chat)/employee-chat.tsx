@@ -195,7 +195,7 @@ const EmployeeChat = () => {
               {sentMessages.map((message: any, id: any) => (
                 <View
                   key={id}
-                  style={[styles.messageContainer, styles.receivedMessage]}
+                  style={[styles.messageContainer, styles.sentMessage]}
                 >
                   <Text>{message.text}</Text>
                   <Text style={styles.timestamp}>
