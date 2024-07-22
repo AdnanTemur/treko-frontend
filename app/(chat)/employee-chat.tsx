@@ -19,16 +19,6 @@ import { io } from "socket.io-client";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Greeting from "@/components/Greeting";
 
-const socket = io(process.env.EXPO_PUBLIC_SOCKET_URL || "");
-
-socket.on("connect", () => {
-  console.log("Connected to server", socket.id);
-});
-
-socket.on("disconnect", () => {
-  console.log("Disconnected from server");
-});
-
 const EmployeeChat = () => {
   const { employeeId }: any = useLocalSearchParams();
   const [accessToken, isLoading]: any = useAsyncStorage("@access_token");
@@ -40,6 +30,47 @@ const EmployeeChat = () => {
   const [error, setError] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState("");
   const scrollViewRef = useRef<ScrollView>(null);
+
+  const socket = useRef(null);
+
+  useEffect(() => {
+    if (user?._id) {
+      socket.current = io(process.env.EXPO_PUBLIC_SOCKET_URL || "", {
+        query: { userId: user._id },
+      });
+
+      socket.current.on("connect", () => {
+        console.log("Connected to server", socket.current.id);
+      });
+
+      socket.current.on("disconnect", () => {
+        console.log("Disconnected from server");
+      });
+
+      socket.current.on(
+        "receiveMessage",
+        ({ senderId, receiverId, message }) => {
+          if (message && message.text) {
+            if (senderId === user._id) {
+              setSentMessages((prevMessages) => [
+                ...prevMessages,
+                { senderId, receiverId, ...message },
+              ]);
+            } else if (receiverId === user._id) {
+              setReceivedMessages((prevMessages) => [
+                ...prevMessages,
+                { senderId, receiverId, ...message },
+              ]);
+            }
+          }
+        }
+      );
+
+      return () => {
+        socket.current.disconnect();
+      };
+    }
+  }, [user]);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -91,30 +122,6 @@ const EmployeeChat = () => {
   }, [employeeId, accessToken, isLoading, user]);
 
   useEffect(() => {
-    const handleReceiveMessage = ({ senderId, receiverId, message }: any) => {
-      if (message && message.text) {
-        if (senderId === user?._id) {
-          setSentMessages((prevMessages: any) => [
-            ...prevMessages,
-            { senderId, receiverId, ...message },
-          ]);
-        } else {
-          setReceivedMessages((prevMessages: any) => [
-            ...prevMessages,
-            { senderId, receiverId, ...message },
-          ]);
-        }
-      }
-    };
-
-    socket.on("receiveMessage", handleReceiveMessage);
-
-    return () => {
-      socket.off("receiveMessage", handleReceiveMessage);
-    };
-  }, [user]);
-
-  useEffect(() => {
     scrollViewRef.current?.scrollToEnd({ animated: true });
   }, [receivedMessages, sentMessages]);
 
@@ -130,7 +137,7 @@ const EmployeeChat = () => {
       return;
     }
 
-    socket.emit("sendMessage", {
+    socket.current.emit("sendMessage", {
       senderId,
       receiverId: JSON.parse(employeeId),
       messageText: newMessage.trim(),
