@@ -3,7 +3,6 @@ import {
   Text,
   View,
   Button,
-  Alert,
   ActivityIndicator,
   Image,
   ScrollView,
@@ -13,6 +12,7 @@ import { router } from "expo-router";
 import useAsyncStorage from "@/hooks/useAuth";
 import { primary } from "@/constants/colors";
 import { SafeAreaView } from "react-native-safe-area-context";
+import ToastManager, { Toast } from "toastify-react-native";
 
 const Setting = () => {
   const [user, loading]: any = useAsyncStorage("@user");
@@ -23,13 +23,16 @@ const Setting = () => {
       await AsyncStorage.removeItem("@access_token");
       await AsyncStorage.removeItem("@user");
 
-      Alert.alert("Success", "Logged out successfully");
+      Toast.success("Logged out successfully", "top");
 
-      // Navigate to login screen
-      router.replace("sign-in");
+      // Delay the navigation by 1 second
+      setTimeout(() => {
+        // Navigate to login screen
+        router.replace("sign-in");
+      }, 1000);
     } catch (error) {
       console.error("Error logging out:", error);
-      Alert.alert("Error", "An unexpected error occurred while logging out");
+      Toast.error("Error", "top");
     }
   };
 
@@ -43,6 +46,7 @@ const Setting = () => {
 
   return (
     <SafeAreaView className="bg-white h-full">
+      <ToastManager />
       <ScrollView
         contentContainerStyle={{
           height: "100%",

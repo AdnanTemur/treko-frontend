@@ -6,7 +6,6 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
@@ -19,6 +18,7 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import Greeting from "@/components/Greeting";
 import BaseUrl from "@/utils/config/baseUrl";
 import Loader from "@/components/Loader";
+import ToastManager, { Toast } from "toastify-react-native";
 
 const EmployeeChat = () => {
   const { employeeId }: any = useLocalSearchParams();
@@ -36,7 +36,7 @@ const EmployeeChat = () => {
 
   useEffect(() => {
     if (user?._id) {
-      socket.current = io(process.env.EXPO_PUBLIC_SOCKET_URL || "", {
+      socket.current = io(`${process.env.EXPO_PUBLIC_BASEURL}/` || "", {
         query: { userId: user._id },
       });
 
@@ -125,15 +125,9 @@ const EmployeeChat = () => {
 
   const sendMessage = () => {
     const senderId = user?._id;
-    if (!newMessage.trim()) {
-      Alert.alert("Error", "Message cannot be empty");
-      return;
-    }
+    if (!newMessage.trim()) return Toast.error("Message is empty", "top");
 
-    if (!senderId) {
-      Alert.alert("Error", "User ID not available");
-      return;
-    }
+    if (!senderId) return Toast.error("UserID not avaiable", "top");
 
     socket.current.emit("sendMessage", {
       senderId,
@@ -169,6 +163,7 @@ const EmployeeChat = () => {
       style={{ flex: 1 }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
+      <ToastManager />
       <SafeAreaView style={styles.container}>
         <View className="flex-row justify-between items-center  p-5">
           <TouchableOpacity>

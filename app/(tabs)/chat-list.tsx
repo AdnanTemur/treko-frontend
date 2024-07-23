@@ -9,13 +9,13 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
-  Alert,
   TextInput,
 } from "react-native";
 import useAsyncStorage from "@/hooks/useAuth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BaseUrl from "@/utils/config/baseUrl";
 import Loader from "@/components/Loader";
+import ToastManager, { Toast } from "toastify-react-native";
 
 const ChatList = () => {
   // hooks
@@ -37,7 +37,7 @@ const ChatList = () => {
       );
       setEmployees(filteredEmployees);
     } catch (error) {
-      Alert.alert("Error", "Failed to fetch employees");
+      Toast.error("Failed to fetch employees", "top");
       console.error(error);
     }
   };
@@ -94,6 +94,7 @@ const ChatList = () => {
 
   return (
     <SafeAreaView className="bg-white h-full">
+      <ToastManager />
       <View className="flex-1 p-5 bg-white">
         <View className="flex-row justify-between items-center mb-10">
           <TouchableOpacity onPress={() => router.push("/location")}>

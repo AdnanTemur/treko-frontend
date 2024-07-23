@@ -1,33 +1,25 @@
-import { useState } from "react";
-import { Alert } from "react-native";
+import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  View,
-  Text,
-  ScrollView,
-  TextInput,
-  Button,
-  ActivityIndicator,
-  Image,
-} from "react-native";
+import { View, Text, ScrollView, ActivityIndicator, Image } from "react-native";
 import { images } from "../../constants";
 import CustomButton from "../../components/CustomButton";
 import FormField from "../../components/FormField";
 import { Link, router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import ToastManager, { Toast } from "toastify-react-native";
 
-const baseURL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/login`;
+const baseURL = `${process.env.EXPO_PUBLIC_BASEURL}/api/v1/login`;
 
 const SignIn = () => {
   const [isSubmitting, setSubmitting] = useState(false);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<any>({
     email: "",
     password: "",
   });
 
   const submit = async () => {
     if (!form.email || !form.password) {
-      Alert.alert("Error", "Please fill in all fields");
+      Toast.error("Please fill in all fields", "top");
       return;
     }
 
@@ -45,36 +37,44 @@ const SignIn = () => {
       const data = await response.json();
 
       if (response.ok) {
-        Alert.alert("Success", "User signed in successfully");
-        // // Save tokens to AsyncStorage
+        Toast.success("Login in successfully", "top");
+
+        // Save tokens to AsyncStorage
         await AsyncStorage.setItem(
           "@access_token",
           JSON.stringify(data.accessToken)
         );
-
         await AsyncStorage.setItem("@user", JSON.stringify(data.user));
 
         // Navigate to home screen (replace with your navigation logic)
-        router.replace("/home");
+        setTimeout(() => {
+          router.replace("/home");
+        }, 1000);
       } else {
-        Alert.alert("Error", data.message || "Sign in failed");
+        Toast.error(data.message || "Sign in failed", "top");
       }
     } catch (error) {
       console.error("Error signing in:", error);
-      Alert.alert("Error", "An unexpected error occurred");
+      Toast.error("An unexpected error occurred", "top");
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <SafeAreaView className="bg-white" style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "white" }}>
+      <ToastManager />
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={{ flex: 1, paddingHorizontal: 20, paddingTop: 20 }}>
           <Image
             source={images.logo}
-            style={{ width: 200, height: 200, alignSelf: "center" }}
-            resizeMode="contain"
+            style={{
+              maxWidth: 300,
+              width: "100%",
+              height: 208,
+              alignSelf: "center",
+              resizeMode: "contain",
+            }}
           />
           <Text
             style={{
@@ -94,9 +94,8 @@ const SignIn = () => {
             handleChangeText={(email: any) => setForm({ ...form, email })}
             otherStyles={{ marginTop: 20 }}
             keyboardType="email-address"
-            secureTextEntry={undefined}
+            secureTextEntry={false}
           />
-          <View className="h-3" />
           <FormField
             title=""
             placeholder="Password"
@@ -105,8 +104,6 @@ const SignIn = () => {
             otherStyles={{ marginTop: 20 }}
             secureTextEntry={true}
           />
-          <View className="h-7" />
-
           {isSubmitting ? (
             <ActivityIndicator
               size="large"
@@ -124,15 +121,13 @@ const SignIn = () => {
             href="/sign-up"
             className="text-sm text-dark mt-4 font-psemibold text-center"
           >
-            {" "}
-            <Text> Don't have an account?</Text>
+            <Text>Don't have an account?</Text>
           </Link>
           <Link
             href="/sign-up"
             className="text-sm text-primary font-psemibold text-center"
           >
-            {" "}
-            <Text> Sign Up</Text>
+            <Text>Sign Up</Text>
           </Link>
         </View>
       </ScrollView>

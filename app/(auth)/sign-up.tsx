@@ -1,20 +1,14 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import {
-  View,
-  Text,
-  ScrollView,
-  Alert,
-  Image,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, ScrollView, Image, ActivityIndicator } from "react-native";
 import FormField from "../../components/FormField";
 import { images } from "../../constants";
 import CustomButton from "@/components/CustomButton";
 import ImagePickerExample from "@/components/ImagePicker";
+import ToastManager, { Toast } from "toastify-react-native";
 
-const baseURL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/register`;
+const baseURL = `${process.env.EXPO_PUBLIC_BASEURL}/api/v1/register`;
 
 const SignUp = () => {
   const [isSubmitting, setSubmitting] = useState(false);
@@ -27,19 +21,16 @@ const SignUp = () => {
   });
 
   const submit = async () => {
-    if (
-      !form.name ||
-      !form.email ||
-      !form.password ||
-      !form.confirmPassword ||
-      !getAvatar
-    ) {
-      Alert.alert("Error", "Please fill in all fields");
+    if (!form.name || !form.email || !form.password || !form.confirmPassword) {
+      Toast.error("Please fill in all fields", "top");
       return;
     }
-
+    if (!getAvatar) {
+      Toast.error("Please add a picture ", "top");
+      return;
+    }
     if (form.password !== form.confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
+      Toast.error("Passwords do not match", "top");
       return;
     }
 
@@ -75,23 +66,24 @@ const SignUp = () => {
       const data = await response.json();
 
       if (response.ok) {
-        Alert.alert("Success", "User registered successfully");
-        router.replace("/sign-in");
+        Toast.success("User registered successfully", "top");
+        setTimeout(() => {
+          router.replace("/sign-in");
+        }, 1000);
       } else {
-        Alert.alert("Error", data?.message || "Registration failed");
+        Toast.error(data?.message || "Registration failed", "top");
       }
     } catch (error: any) {
-      Alert.alert("Error", error?.message || "An unexpected error occurred");
+      Toast.error(error?.message || "An unexpected error occurred", "top");
     } finally {
       setSubmitting(false);
     }
   };
-
   return (
     <SafeAreaView className="bg-white h-full px-6">
+      <ToastManager />
       <ScrollView>
         <View className="h-10" />
-
         <View className="w-full flex justify-center items-center h-full ">
           <View className="flex flex-row items-center">
             <Image source={images.logo} className="w-[60px] h-[60px]" />
