@@ -6,14 +6,27 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "channel": "development"
+      "channel": "development",
+      "env": {
+        "EXPO_PUBLIC_BACKEND_URL": "https://treko-back.instazoid.com/api/v1",
+        "EXPO_PUBLIC_SOCKET_URL": "https://treko-back.instazoid.com/",
+        "EXPO_PUBLIC_BASEURL": "https://treko-back.instazoid.com/"
+      }
     },
     "preview": {
       "distribution": "internal",
       "channel": "preview"
     },
     "production": {
-      "channel": "production"
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_BACKEND_URL": "https://treko-back.instazoid.com/api/v1",
+        "EXPO_PUBLIC_SOCKET_URL": "https://treko-back.instazoid.com/",
+        "EXPO_PUBLIC_BASEURL": "https://treko-back.instazoid.com/"
+      },
+      "android": {
+        "buildType": "apk"
+      }
     }
   },
   "submit": {

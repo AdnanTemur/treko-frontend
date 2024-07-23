@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, ScrollView, ActivityIndicator, Image } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  ActivityIndicator,
+  Image,
+  Alert,
+} from "react-native";
 import { images } from "../../constants";
 import CustomButton from "../../components/CustomButton";
 import FormField from "../../components/FormField";
@@ -35,7 +42,6 @@ const SignIn = () => {
       });
 
       const data = await response.json();
-
       if (response.ok) {
         Toast.success("Login in successfully", "top");
 
@@ -51,10 +57,9 @@ const SignIn = () => {
           router.replace("/home");
         }, 1000);
       } else {
-        Toast.error(data.message || "Sign in failed", "top");
+        Toast.error(data.message, "top");
       }
     } catch (error) {
-      console.error("Error signing in:", error);
       Toast.error("An unexpected error occurred", "top");
     } finally {
       setSubmitting(false);
