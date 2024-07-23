@@ -5,17 +5,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../constants";
 import CustomButton from "@/components/CustomButton";
 import useAsyncStorage from "@/hooks/useAuth";
-// import { CustomButton, Loader } from "../components";
-// import { useGlobalContext } from "../context/GlobalProvider";
+import Loader from "@/components/Loader";
 
 const Welcome = () => {
-  // const { loading, isLogged } = useGlobalContext();
   const [user, loading] = useAsyncStorage("@user");
   if (!loading && user) return <Redirect href="/home" />;
 
   return (
     <SafeAreaView className="bg-white h-full">
-      {/* <Loader isLoading={loading} /> */}
+      <Loader isLoading={loading} />
 
       <ScrollView
         contentContainerStyle={{
@@ -23,12 +21,6 @@ const Welcome = () => {
         }}
       >
         <View className="w-full flex justify-center items-center h-full px-4">
-          {/* <Image
-            source={images.logo}
-            className="w-[130px] h-[84px]"
-            resizeMode="contain"
-          /> */}
-
           <Image
             source={images.logo}
             className="max-w-[300px] w-full h-[208px]"
@@ -40,19 +32,16 @@ const Welcome = () => {
               Discover Endless{"\n"}
               Possibilities with <Text className="text-primary">Treko</Text>
             </Text>
-
             <Image
               source={images.path}
               className="w-[136px] h-[15px] absolute -bottom-2 -right-8"
               resizeMode="contain"
             />
           </View>
-
           <Text className="text-sm font-pregular text-black mt-7 text-center">
             Where Creativity Meets Innovation: Embark on a Journey of Limitless
             Exploration with Treko
           </Text>
-
           <CustomButton
             title="Continue"
             handlePress={() => router.push("/sign-in")}

@@ -12,11 +12,10 @@ import {
   Alert,
   TextInput,
 } from "react-native";
-import axios from "axios";
 import useAsyncStorage from "@/hooks/useAuth";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const baseURL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/get-all-employees`;
+import BaseUrl from "@/utils/config/baseUrl";
+import Loader from "@/components/Loader";
 
 const ChatList = () => {
   // hooks
@@ -30,11 +29,7 @@ const ChatList = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get(baseURL, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
+      const response = await BaseUrl.get("api/v1/get-all-employees");
 
       // Filter out the current user from the list
       const filteredEmployees = response.data.employees.filter(
@@ -66,7 +61,7 @@ const ChatList = () => {
     });
   };
 
-  if (isLoading) return <Text>Loading...</Text>;
+  if (loading || isLoading) return <Loader isLoading={isLoading || loading} />;
 
   const filteredEmployees = employees.filter((employee: any) =>
     employee.name.toLowerCase().includes(searchQuery.toLowerCase())

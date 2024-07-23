@@ -51,6 +51,7 @@ const SignIn = () => {
           "@access_token",
           JSON.stringify(data.accessToken)
         );
+
         await AsyncStorage.setItem("@user", JSON.stringify(data.user));
 
         // Navigate to home screen (replace with your navigation logic)

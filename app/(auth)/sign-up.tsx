@@ -19,7 +19,6 @@ const baseURL = `${process.env.EXPO_PUBLIC_BACKEND_URL}/register`;
 const SignUp = () => {
   const [isSubmitting, setSubmitting] = useState(false);
   const [getAvatar, setGetAvatar] = useState<any>(null);
-  console.log(getAvatar, "getAvatar");
   const [form, setForm] = useState({
     name: "",
     email: "",

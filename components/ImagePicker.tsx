@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { Button, Image, View, StyleSheet, Text } from "react-native";
+import { Image, View, StyleSheet, Text } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import EvilIcons from "@expo/vector-icons/EvilIcons";
 
 export default function ImagePickerExample({ setGetAvatar }: any) {
@@ -14,8 +13,6 @@ export default function ImagePickerExample({ setGetAvatar }: any) {
       aspect: [4, 3],
       quality: 1,
     });
-
-    console.log(result);
 
     if (!result.canceled) {
       setImage(result.assets[0].uri);

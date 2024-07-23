@@ -11,13 +11,14 @@ import {
   Platform,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import axios from "axios";
 import { router, useLocalSearchParams } from "expo-router";
 import useAsyncStorage from "@/hooks/useAuth";
 import { Ionicons } from "@expo/vector-icons";
 import { io } from "socket.io-client";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import Greeting from "@/components/Greeting";
+import BaseUrl from "@/utils/config/baseUrl";
+import Loader from "@/components/Loader";
 
 const EmployeeChat = () => {
   const { employeeId }: any = useLocalSearchParams();
@@ -31,7 +32,7 @@ const EmployeeChat = () => {
   const [newMessage, setNewMessage] = useState("");
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const socket = useRef(null);
+  const socket: any = useRef(null);
 
   useEffect(() => {
     if (user?._id) {
@@ -40,16 +41,16 @@ const EmployeeChat = () => {
       });
 
       socket.current.on("connect", () => {
-        console.log("Connected to server", socket.current.id);
+        console.log("Connected to user 💬", socket.current.id);
       });
 
       socket.current.on("disconnect", () => {
-        console.log("Disconnected from server");
+        console.log("Disconnected from user 💬 ");
       });
 
       socket.current.on(
         "receiveMessage",
-        ({ senderId, receiverId, message }) => {
+        ({ senderId, receiverId, message }: any) => {
           if (message && message.text) {
             if (senderId === user._id) {
               setSentMessages((prevMessages) => [
@@ -74,24 +75,21 @@ const EmployeeChat = () => {
 
   useEffect(() => {
     const fetchMessages = async () => {
-      if (!employeeId || !accessToken || isLoading || !user) return;
+      if (!employeeId || !accessToken || isLoading || !user)
+        return (
+          <Loader
+            isLoading={!employeeId || !accessToken || isLoading || !user}
+          />
+        );
       try {
-        const jwtToken = accessToken;
         const userId = user._id;
         const coworkerId = JSON.parse(employeeId);
-        const response = await axios.get(
-          `${process.env.EXPO_PUBLIC_BACKEND_URL}/coworker-chats/messages`,
-          {
-            params: {
-              userId: userId,
-              coworkerId: coworkerId,
-            },
-            headers: {
-              Authorization: `Bearer ${jwtToken}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await BaseUrl.get(`api/v1/coworker-chats/messages`, {
+          params: {
+            userId: userId,
+            coworkerId: coworkerId,
+          },
+        });
         const data = response.data;
         if (data && data.coworkerChats && data.coworkerChats.length > 0) {
           const chat = data.coworkerChats[0];
@@ -146,21 +144,8 @@ const EmployeeChat = () => {
     setNewMessage("");
   };
 
-  if (loading || isLoading) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <Text>Loading...</Text>
-      </SafeAreaView>
-    );
-  }
-
-  if (error) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <Text>Error: {error}</Text>
-      </SafeAreaView>
-    );
-  }
+  if (loading || isLoading || error)
+    return <Loader isLoading={loading || isLoading} />;
 
   // Combine and sort messages for display, filtering out duplicates by timestamp
   const combinedMessages = [
@@ -209,6 +194,7 @@ const EmployeeChat = () => {
               <Text>No messages to display</Text>
             </View>
           ) : (
+            combinedMessages &&
             combinedMessages.map((message: any, id: any) => (
               <View
                 key={id}
