@@ -7,7 +7,6 @@ import { Redirect, router } from "expo-router";
 import Loader from "@/components/Loader";
 import { BOSS, EMPLOYEE } from "@/constants/enums";
 import { SafeAreaView } from "react-native-safe-area-context";
-import TesterApis from "@/components/tester";
 
 const home = () => {
   const [user, loading]: any = useAsyncStorage("@user");

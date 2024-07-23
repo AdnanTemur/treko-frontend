@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "treko-frontend",
+    "name": "Treko",
     "scheme": "treko",
     "slug": "treko-frontend",
     "version": "1.0.0",
@@ -32,6 +32,7 @@
       "typedRoutes": true
     },
     "extra": {
+      "EXPO_PUBLIC_BASEURL": "https://treko-back.instazoid.com",
       "router": {
         "origin": false
       },
