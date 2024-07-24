@@ -1,30 +1,11 @@
+import { StyleSheet } from "react-native";
 import React from "react";
-import MapView from "react-native-maps";
-import { ScrollView, StyleSheet, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import EmployeeMaps from "@/components/map/employee-map";
 
-export default function Location() {
-  return (
-    <SafeAreaView className="bg-white h-full">
-      <ScrollView
-        contentContainerStyle={{
-          height: "100%",
-        }}
-      >
-        <View style={styles.container}>
-          <MapView style={styles.map} />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
+const Location = () => {
+  return <EmployeeMaps />;
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  map: {
-    width: "100%",
-    height: "100%",
-  },
-});
+export default Location;
+
+const styles = StyleSheet.create({});
