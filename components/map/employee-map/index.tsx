@@ -40,7 +40,7 @@ export default function EmployeeMaps() {
           });
         if (!providerStatus.locationServicesEnabled) {
           setModalVisible(true);
-          setLocation(null); // Reset location state
+          setLocation(null);
         } else {
           setModalVisible(false);
           const location = await Location.getCurrentPositionAsync({});
