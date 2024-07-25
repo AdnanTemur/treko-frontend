@@ -1,65 +1,76 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import {
   StyleSheet,
   View,
   ActivityIndicator,
-  Alert,
-  Image,
-  Text,
   Modal,
+  Text,
   TouchableOpacity,
   Platform,
   Linking,
+  Image,
 } from "react-native";
 import MapView, { Marker, Callout } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as Location from "expo-location";
 import useAsyncStorage from "@/hooks/useAuth";
 import Entypo from "@expo/vector-icons/Entypo";
+import { setLocationEnabled } from "@/toolkit/slice/locationSlice";
+import { useDispatch } from "react-redux";
+
+interface LocationData {
+  latitude: number;
+  longitude: number;
+}
+
+interface User {
+  avatar: string;
+  name: string;
+}
 
 export default function EmployeeMaps() {
-  const [location, setLocation] = useState<any>(null);
-  const [errorMsg, setErrorMsg] = useState<any>(null);
   const [user, loading]: any = useAsyncStorage("@user");
+  const dispatch = useDispatch();
+
+  const [location, setLocation] = useState<LocationData | null>(null);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const mapRef = useRef<MapView>(null);
 
-  useEffect(() => {
-    const checkLocationServices = async () => {
-      try {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          setErrorMsg("Permission to access location was denied");
-          setModalVisible(true);
-          return;
-        }
-
-        const providerStatus: any =
-          await Location.getProviderStatusAsync().catch((e) => {
-            console.log(e, "provider status error");
-          });
-        if (!providerStatus.locationServicesEnabled) {
-          setModalVisible(true);
-          setLocation(null);
-        } else {
-          setModalVisible(false);
-          const location = await Location.getCurrentPositionAsync({});
-          setLocation(location.coords);
-        }
-      } catch (error) {
-        setErrorMsg("Error checking location services");
+  const checkLocationServices = useCallback(async () => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
         setModalVisible(true);
+        return;
       }
-    };
 
+      const providerStatus = await Location.getProviderStatusAsync();
+      if (!providerStatus.locationServicesEnabled) {
+        setModalVisible(true);
+        setLocation(null);
+        dispatch(setLocationEnabled(false));
+      } else {
+        setModalVisible(false);
+        const location = await Location.getCurrentPositionAsync({});
+        setLocation(location.coords);
+        dispatch(setLocationEnabled(true));
+      }
+    } catch (error) {
+      setErrorMsg("Error checking location services");
+      setModalVisible(true);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
     checkLocationServices();
-
-    const locationInterval = setInterval(checkLocationServices, 5000);
+    const locationInterval = setInterval(checkLocationServices, 5000); // Increase interval to reduce frequency
 
     return () => clearInterval(locationInterval);
-  }, []);
+  }, [checkLocationServices]);
 
-  const recenterMap = () => {
+  const recenterMap = useCallback(() => {
     if (mapRef.current && location) {
       mapRef.current.animateToRegion({
         latitude: location.latitude,
@@ -68,7 +79,7 @@ export default function EmployeeMaps() {
         longitudeDelta: 0.005,
       });
     }
-  };
+  }, [location]);
 
   const handleOpenSettings = () => {
     if (Platform.OS === "ios") {
@@ -78,7 +89,7 @@ export default function EmployeeMaps() {
     }
   };
 
-  if (!location) {
+  if (!location && !loading) {
     return (
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.loadingContainer}>
@@ -88,9 +99,7 @@ export default function EmployeeMaps() {
           animationType="slide"
           transparent={true}
           visible={modalVisible}
-          onRequestClose={() => {
-            // Optionally handle modal close
-          }}
+          onRequestClose={() => {}}
         >
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
@@ -117,15 +126,16 @@ export default function EmployeeMaps() {
         ref={mapRef}
         style={styles.map}
         initialRegion={{
-          latitude: location.latitude,
-          longitude: location.longitude,
+          latitude: location?.latitude ?? 0,
+          longitude: location?.longitude ?? 0,
           latitudeDelta: 0.005,
           longitudeDelta: 0.005,
         }}
         showsUserLocation={true}
       >
-        {user && (
+        {user && location && (
           <Marker
+            onPress={recenterMap}
             coordinate={{
               latitude: location.latitude,
               longitude: location.longitude,
@@ -133,11 +143,10 @@ export default function EmployeeMaps() {
           >
             <View style={styles.marker}>
               <Image source={{ uri: user.avatar }} style={styles.avatar} />
-              <Text style={styles.name}>{user.name}</Text>
             </View>
             <Callout>
               <View>
-                <Text>{user.name}</Text>
+                <Text style={styles.name}>{user.name}</Text>
               </View>
             </Callout>
           </Marker>

@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
+import { Provider } from "react-redux";
+import { store } from "@/toolkit/store";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -33,12 +35,14 @@ const RootLayout = () => {
     return null;
   }
   return (
-    <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(chat)" options={{ headerShown: false }} />
-    </Stack>
+    <Provider store={store}>
+      <Stack>
+        <Stack.Screen name="index" options={{ headerShown: false }} />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        <Stack.Screen name="(chat)" options={{ headerShown: false }} />
+      </Stack>
+    </Provider>
   );
 };
 
