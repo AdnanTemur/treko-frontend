@@ -57,7 +57,7 @@ const BossMap = () => {
 
   useEffect(() => {
     checkLocationServices();
-    const locationInterval = setInterval(checkLocationServices, 5000);
+    const locationInterval = setInterval(checkLocationServices, 1000);
     return () => clearInterval(locationInterval);
   }, [checkLocationServices]);
 
@@ -80,7 +80,7 @@ const BossMap = () => {
         },
       }));
       setEmployeeLocations(formattedLocations);
-      console.log("Getting Current Location 📍");
+      console.log("Getting Current Location 📌");
     } catch (error) {
       console.error("Error fetching employee locations:", error);
     }
@@ -109,6 +109,8 @@ const BossMap = () => {
   };
 
   const postLocation = async (location: any) => {
+    console.log("Sending Current Location Boss 📍");
+
     try {
       await BaseUrl.post("/api/v1/create-location", {
         userId: user?._id,

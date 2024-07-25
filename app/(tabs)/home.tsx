@@ -49,13 +49,13 @@ const home = () => {
             <View className="flex items-center">
               <Image
                 source={{
-                  uri:
-                    user?.avatar ||
-                    "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvi7HpQ-_PMSMOFrj1hwjp6LDcI-jm3Ro0Xw&s",
+                  uri: user?.avatar,
                 }}
                 className="w-10 h-10 rounded-full"
               />
-              <Text className="text-[10px]">{user && user?.name}</Text>
+              <Text className="text-[14px] capitalize font-bold">
+                {user && user?.name}
+              </Text>
             </View>
           </View>
 
@@ -69,60 +69,77 @@ const home = () => {
               />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push("/location")}>
-            <View className="flex-row justify-between items-center bg-[#F8F8F8] p-4 rounded-lg mb-5">
-              <Text className="text-lg">Locations</Text>
-              <Image
-                resizeMode="contain"
-                className="w-4 h-4"
-                source={icons.rightarrow}
-              />
-            </View>
-          </TouchableOpacity>
+          <Text className="text-lg mb-3 mt-2 p-1 capitalize">
+            Hello {user.name} !
+          </Text>
+          {user.role === EMPLOYEE && (
+            <TouchableOpacity onPress={() => router.push("/location")}>
+              <View className="flex-row justify-between items-center bg-[#F8F8F8] p-4 rounded-lg mb-5">
+                <Text className="text-lg">Locations</Text>
+                <Image
+                  resizeMode="contain"
+                  className="w-4 h-4"
+                  source={icons.rightarrow}
+                />
+              </View>
+            </TouchableOpacity>
+          )}
+
           {user.role === BOSS && (
             <>
               <View className="flex-row flex-wrap justify-between">
                 <TouchableOpacity
                   onPress={() => Alert.alert("Coming Soon")}
-                  className="w-[45%] border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
+                  className="w-[45%] border-2  bg-[#F24369] border-[#d2dee4] p-5 rounded-lg items-center mb-5"
                 >
                   <Image
                     resizeMode="contain"
                     className="w-10 h-10"
                     source={icons.person}
                   />
-                  <Text className="text-lg mt-5">Users</Text>
+                  <Text className="text-[14px] mt-5 text-white">
+                    Manage Employee
+                  </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={() => Alert.alert("Coming Soon")}
-                  className="w-[45%]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
+                  className="w-[45%] bg-[#4DE4E1]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
                 >
                   <Image
                     resizeMode="contain"
                     className="w-10 h-10"
                     source={icons.add}
                   />
-                  <Text className="text-lg mt-5">Add Users</Text>
+                  <Text className="text-[14px] text-white mt-5">
+                    Add Employee
+                  </Text>
                 </TouchableOpacity>
-                {/* <TouchableOpacity
-                  onPress={() => router.push("/setting")}
-                  className="w-[45%]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
+                <TouchableOpacity
+                  onPress={() => Alert.alert("Coming Soon")}
+                  className="w-[45%] bg-[#4DE4E1]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
                 >
                   <Image
                     resizeMode="contain"
                     className="w-10 h-10"
-                    source={icons.settingBig}
+                    source={icons.chat}
                   />
-                  <Text className="text-lg mt-5">Settings</Text>
-                </TouchableOpacity> */}
-                {/* <TouchableOpacity className="w-[45%]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5">
+                  <Text className="text-[14px] text-white mt-5">
+                    Trace Chats
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => router.push("/location")}
+                  className="w-[45%] bg-[#4DE4E1]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
+                >
                   <Image
                     resizeMode="contain"
                     className="w-10 h-10"
-                    source={icons.theme}
+                    source={icons.location}
                   />
-                  <Text className="text-lg mt-5">Theme</Text>
-                </TouchableOpacity> */}
+                  <Text className="text-[14px] text-white mt-5">
+                    Trace Location
+                  </Text>
+                </TouchableOpacity>
               </View>
             </>
           )}

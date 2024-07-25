@@ -59,7 +59,7 @@ export default function EmployeeMaps() {
 
   useEffect(() => {
     checkLocationServices();
-    const locationInterval = setInterval(checkLocationServices, 5000);
+    const locationInterval = setInterval(checkLocationServices, 1000);
 
     return () => clearInterval(locationInterval);
   }, [checkLocationServices]);
@@ -84,7 +84,7 @@ export default function EmployeeMaps() {
   };
 
   const postLocation = async (location: any) => {
-    console.log("Sending Current Location 📍");
+    console.log("Sending Current Location Employee 📍");
     try {
       const response = await BaseUrl.post("/api/v1/create-location", {
         userId: user?._id,
