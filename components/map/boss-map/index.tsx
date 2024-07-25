@@ -19,20 +19,18 @@ import { setLocationEnabled } from "@/toolkit/slice/locationSlice";
 import { useDispatch } from "react-redux";
 import BaseUrl from "@/utils/config/baseUrl";
 
-export default function EmployeeMaps() {
-  const [user, loading]: any = useAsyncStorage("@user");
+const BossMap = () => {
+  const [user, loading] = useAsyncStorage("@user");
   const dispatch = useDispatch();
+  const mapRef = useRef<any>(null);
 
   const [location, setLocation] = useState<any>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const mapRef = useRef<MapView>(null);
-
+  const [modalVisible, setModalVisible] = useState<any>(false);
+  const [employeeLocations, setEmployeeLocations] = useState<any>([]);
   const checkLocationServices = useCallback(async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
         setModalVisible(true);
         return;
       }
@@ -47,12 +45,12 @@ export default function EmployeeMaps() {
         const location = await Location.getCurrentPositionAsync({});
         setLocation(location.coords);
         dispatch(setLocationEnabled(true));
-        if (user) {
+        if (user && location) {
           postLocation(location.coords);
         }
+        fetchEmployeeLocations();
       }
     } catch (error) {
-      setErrorMsg("Error checking location services");
       setModalVisible(true);
     }
   }, [dispatch, user]);
@@ -60,17 +58,44 @@ export default function EmployeeMaps() {
   useEffect(() => {
     checkLocationServices();
     const locationInterval = setInterval(checkLocationServices, 5000);
-
     return () => clearInterval(locationInterval);
   }, [checkLocationServices]);
+
+  const fetchEmployeeLocations = async () => {
+    try {
+      const response = await BaseUrl.get("/api/v1/get-all-locations");
+      const formattedLocations = response.data.locations.map((loc: any) => ({
+        _id: loc._id,
+        userDetail: {
+          name: loc.userDetail.name,
+          avatar: loc.userDetail.avatar,
+          email: loc.userDetail.email,
+          _id: loc.userDetail._id,
+        },
+        coordinates: {
+          latitude: loc.coordinates.latitude,
+          longitude: loc.coordinates.longitude,
+          latitudeDelta: loc.coordinates.latitudeDelta ?? 0.005,
+          longitudeDelta: loc.coordinates.longitudeDelta ?? 0.005,
+        },
+      }));
+      setEmployeeLocations(formattedLocations);
+      console.log("Getting Current Location 📍");
+    } catch (error) {
+      console.error("Error fetching employee locations:", error);
+    }
+  };
+  useEffect(() => {
+    fetchEmployeeLocations();
+  }, []);
 
   const recenterMap = useCallback(() => {
     if (mapRef.current && location) {
       mapRef.current.animateToRegion({
         latitude: location.latitude,
         longitude: location.longitude,
-        latitudeDelta: 0.005,
-        longitudeDelta: 0.005,
+        latitudeDelta: location.latitudeDelta ?? 0.005,
+        longitudeDelta: location.longitudeDelta ?? 0.005,
       });
     }
   }, [location]);
@@ -84,9 +109,8 @@ export default function EmployeeMaps() {
   };
 
   const postLocation = async (location: any) => {
-    console.log("Sending Current Location 📍");
     try {
-      const response = await BaseUrl.post("/api/v1/create-location", {
+      await BaseUrl.post("/api/v1/create-location", {
         userId: user?._id,
         latitude: location.latitude,
         longitude: location.longitude,
@@ -97,6 +121,7 @@ export default function EmployeeMaps() {
       console.error("Error posting location:", error);
     }
   };
+
   if (!location && !loading) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -127,7 +152,6 @@ export default function EmployeeMaps() {
       </SafeAreaView>
     );
   }
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <MapView
@@ -136,29 +160,34 @@ export default function EmployeeMaps() {
         initialRegion={{
           latitude: location?.latitude ?? 0,
           longitude: location?.longitude ?? 0,
-          latitudeDelta: 0.005,
-          longitudeDelta: 0.005,
+          latitudeDelta: location?.latitudeDelta ?? 0.005,
+          longitudeDelta: location?.longitudeDelta ?? 0.005,
         }}
         showsUserLocation={true}
       >
-        {user && location && (
-          <Marker
-            onPress={recenterMap}
-            coordinate={{
-              latitude: location.latitude,
-              longitude: location.longitude,
-            }}
-          >
-            <View style={styles.marker}>
-              <Image source={{ uri: user?.avatar }} style={styles.avatar} />
-            </View>
-            <Callout>
-              <View>
-                <Text style={styles.name}>{user?.name}</Text>
+        {employeeLocations.map((empLocation: any) => {
+          return (
+            <Marker
+              key={empLocation._id}
+              coordinate={empLocation.coordinates}
+              title={empLocation.userDetail.name}
+              description={empLocation.userDetail.email}
+            >
+              <View style={styles.marker}>
+                <Image
+                  source={{ uri: empLocation.userDetail.avatar }}
+                  style={styles.avatar}
+                />
               </View>
-            </Callout>
-          </Marker>
-        )}
+              <Callout>
+                <View>
+                  <Text style={styles.name}>{empLocation.userDetail.name}</Text>
+                  <Text>{empLocation.userDetail.email}</Text>
+                </View>
+              </Callout>
+            </Marker>
+          );
+        })}
       </MapView>
       <View style={styles.buttonContainer}>
         <Entypo
@@ -170,7 +199,7 @@ export default function EmployeeMaps() {
       </View>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   safeArea: {
@@ -235,3 +264,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+export default BossMap;

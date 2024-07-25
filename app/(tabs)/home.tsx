@@ -1,7 +1,14 @@
 import { icons } from "@/constants";
 import useAsyncStorage from "@/hooks/useAuth";
 import React from "react";
-import { Text, View, TouchableOpacity, Image, ScrollView } from "react-native";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  ScrollView,
+  Alert,
+} from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Redirect, router } from "expo-router";
 import Loader from "@/components/Loader";
@@ -14,7 +21,7 @@ const home = () => {
   // hooks
   const [user, loading]: any = useAsyncStorage("@user");
   const { locationEnabled } = useSelector((state: RootState) => state.location);
-  console.log(locationEnabled, "locationEnabled");
+
   //state
   if (loading) return <Loader isLoading={loading} />;
   if (!loading && !user) return <Redirect href="/sign-in" />;
@@ -75,7 +82,10 @@ const home = () => {
           {user.role === BOSS && (
             <>
               <View className="flex-row flex-wrap justify-between">
-                <TouchableOpacity className="w-[45%] border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5">
+                <TouchableOpacity
+                  onPress={() => Alert.alert("Coming Soon")}
+                  className="w-[45%] border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
+                >
                   <Image
                     resizeMode="contain"
                     className="w-10 h-10"
@@ -83,7 +93,10 @@ const home = () => {
                   />
                   <Text className="text-lg mt-5">Users</Text>
                 </TouchableOpacity>
-                <TouchableOpacity className="w-[45%]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5">
+                <TouchableOpacity
+                  onPress={() => Alert.alert("Coming Soon")}
+                  className="w-[45%]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
+                >
                   <Image
                     resizeMode="contain"
                     className="w-10 h-10"
@@ -91,7 +104,7 @@ const home = () => {
                   />
                   <Text className="text-lg mt-5">Add Users</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   onPress={() => router.push("/setting")}
                   className="w-[45%]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
                 >
@@ -101,15 +114,15 @@ const home = () => {
                     source={icons.settingBig}
                   />
                   <Text className="text-lg mt-5">Settings</Text>
-                </TouchableOpacity>
-                <TouchableOpacity className="w-[45%]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5">
+                </TouchableOpacity> */}
+                {/* <TouchableOpacity className="w-[45%]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5">
                   <Image
                     resizeMode="contain"
                     className="w-10 h-10"
                     source={icons.theme}
                   />
                   <Text className="text-lg mt-5">Theme</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
             </>
           )}
