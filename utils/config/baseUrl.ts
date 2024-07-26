@@ -39,7 +39,7 @@ const handleLogout = async () => {
     router.push("/sign-in");
     Alert.alert("Success", "Logged out successfully");
   } catch (error) {
-    console.error("Error logging out:", error);
+    console.log("Error logging out:", error);
     Alert.alert("Error", "An unexpected error occurred while logging out");
   }
 };
