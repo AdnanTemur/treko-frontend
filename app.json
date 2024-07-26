@@ -3,6 +3,7 @@
     "name": "Treko",
     "scheme": "treko",
     "slug": "treko-frontend",
+    "owner": "adnantemur",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
