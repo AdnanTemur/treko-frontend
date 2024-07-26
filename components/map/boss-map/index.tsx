@@ -47,8 +47,8 @@ const BossMap = () => {
         dispatch(setLocationEnabled(true));
         if (user && location) {
           postLocation(location.coords);
+          fetchEmployeeLocations();
         }
-        fetchEmployeeLocations();
       }
     } catch (error) {
       setModalVisible(true);
@@ -80,7 +80,7 @@ const BossMap = () => {
         },
       }));
       setEmployeeLocations(formattedLocations);
-      console.log("Getting Current Location 📌");
+      // console.log("Getting Current Location 📌");
     } catch (error) {
       console.error("Error fetching employee locations:", error);
     }
@@ -109,7 +109,7 @@ const BossMap = () => {
   };
 
   const postLocation = async (location: any) => {
-    console.log("Sending Current Location Boss 📍");
+    // console.log("Sending Current Location Boss 📍");
 
     try {
       await BaseUrl.post("/api/v1/create-location", {

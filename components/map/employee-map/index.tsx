@@ -24,7 +24,6 @@ export default function EmployeeMaps() {
   const dispatch = useDispatch();
 
   const [location, setLocation] = useState<any>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const mapRef = useRef<MapView>(null);
 
@@ -32,7 +31,6 @@ export default function EmployeeMaps() {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
         setModalVisible(true);
         return;
       }
@@ -52,7 +50,6 @@ export default function EmployeeMaps() {
         }
       }
     } catch (error) {
-      setErrorMsg("Error checking location services");
       setModalVisible(true);
     }
   }, [dispatch, user]);
