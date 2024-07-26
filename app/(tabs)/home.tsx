@@ -14,19 +14,17 @@ import { Redirect, router } from "expo-router";
 import Loader from "@/components/Loader";
 import { BOSS, EMPLOYEE } from "@/constants/enums";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSelector } from "react-redux";
-import { RootState } from "@/toolkit/store";
 
 const home = () => {
   // hooks
   const [user, loading]: any = useAsyncStorage("@user");
-  const { locationEnabled } = useSelector((state: RootState) => state.location);
 
   //state
   if (loading) return <Loader isLoading={loading} />;
   if (!loading && !user) return <Redirect href="/sign-in" />;
   if (!loading && user && !locationEnabled && user.role === EMPLOYEE)
     return <Redirect href="/location" />;
+
 
   return (
     <SafeAreaView className="bg-white h-full">
