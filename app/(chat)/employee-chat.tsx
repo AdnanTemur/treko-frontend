@@ -110,7 +110,7 @@ const EmployeeChat = () => {
             error.message || "An error occurred while fetching messages."
           );
         }
-        console.error("Error fetching messages:", error);
+        console.log("Error fetching messages:", error);
       } finally {
         setLoading(false);
       }

@@ -33,7 +33,7 @@ const BossTraceChats = () => {
         const { data } = await BaseUrl.get("/api/v1/get-all-employees");
         setEmployees(data.employees);
       } catch (error) {
-        console.error("Error fetching employees:", error);
+        console.log("Error fetching employees:", error);
       }
     };
 
@@ -81,11 +81,11 @@ const BossTraceChats = () => {
         } else {
           setEmptyStateMessage("Error fetching chat history.");
         }
-      } catch (error) {
-        // console.error(
-        //   "Error fetching chat history:"
-        //   // error.response?.data || error.message
-        // );
+      } catch (error: any) {
+        console.log(
+          "Error fetching chat history:",
+          error.response?.data || error.message
+        );
         setEmptyStateMessage("Error fetching chat history.");
       } finally {
         setLoading(false);

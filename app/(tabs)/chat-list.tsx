@@ -35,10 +35,18 @@ const ChatList = () => {
       const filteredEmployees = response.data.employees.filter(
         (employee: any) => employee._id !== user?._id
       );
-      setEmployees(filteredEmployees);
+
+      // Sort employees, placing 'boss' at the top
+      const sortedEmployees = filteredEmployees.sort((a: any, b: any) => {
+        if (a.role === "boss") return -1;
+        if (b.role === "boss") return 1;
+        return 0;
+      });
+
+      setEmployees(sortedEmployees);
     } catch (error) {
       Toast.error("Failed to fetch employees", "top");
-      console.error(error);
+      console.log(error);
     }
   };
 
@@ -76,8 +84,8 @@ const ChatList = () => {
         />
         <View className="flex-1 ml-4">
           <Text className="text-lg font-bold">{item.name}</Text>
-          <Text className="text-sm text-gray-600">
-            {item.position || "Employee"}
+          <Text className="text-sm text-gray-600 capitalize">
+            {item.role || "Employee"}
           </Text>
           <Text className="text-sm text-gray-600">
             {item.workTime || "8:00 am - 5:00 pm"}

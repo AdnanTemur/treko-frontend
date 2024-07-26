@@ -57,7 +57,7 @@ const BossMap = () => {
 
   useEffect(() => {
     checkLocationServices();
-    const locationInterval = setInterval(checkLocationServices, 1000);
+    const locationInterval = setInterval(checkLocationServices, 10000);
     return () => clearInterval(locationInterval);
   }, [checkLocationServices]);
 
@@ -80,9 +80,9 @@ const BossMap = () => {
         },
       }));
       setEmployeeLocations(formattedLocations);
-      // console.log("Getting Current Location 📌");
+      console.log("Retrieving All Employee Location  📌");
     } catch (error) {
-      console.error("Error fetching employee locations:", error);
+      console.log("Error fetching employee locations:", error);
     }
   };
   useEffect(() => {
@@ -109,7 +109,7 @@ const BossMap = () => {
   };
 
   const postLocation = async (location: any) => {
-    // console.log("Sending Current Location Boss 📍");
+    console.log("Boss Location Sending 📍");
 
     try {
       await BaseUrl.post("/api/v1/create-location", {
@@ -120,7 +120,7 @@ const BossMap = () => {
         longitudeDelta: location.longitudeDelta ?? 0.005,
       });
     } catch (error) {
-      console.error("Error posting location:", error);
+      console.log("Error posting location:", error);
     }
   };
 

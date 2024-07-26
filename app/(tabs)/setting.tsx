@@ -25,7 +25,7 @@ const Setting = () => {
         router.replace("sign-in");
       }, 1000);
     } catch (error) {
-      console.error("Error logging out:", error);
+      console.log("Error logging out:", error);
       Toast.error("Error", "top");
     }
   };
