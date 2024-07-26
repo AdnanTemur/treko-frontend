@@ -9,6 +9,10 @@
       "channel": "development",
       "env": {
         "EXPO_PUBLIC_BASEURL": "https://treko-back.instazoid.com"
+      },
+      "android": {
+        "buildType": "apk",
+        "image": "latest"
       }
     },
     "preview": {
@@ -16,6 +20,10 @@
       "channel": "preview",
       "env": {
         "EXPO_PUBLIC_BASEURL": "https://treko-back.instazoid.com"
+      },
+      "android": {
+        "buildType": "apk",
+        "image": "latest"
       }
     },
     "production": {
@@ -24,7 +32,8 @@
         "EXPO_PUBLIC_BASEURL": "https://treko-back.instazoid.com"
       },
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "image": "latest"
       }
     }
   },
