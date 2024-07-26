@@ -24,7 +24,6 @@ export default function EmployeeMaps() {
   const dispatch = useDispatch();
 
   const [location, setLocation] = useState<any>(null);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const mapRef = useRef<MapView>(null);
 
@@ -32,7 +31,6 @@ export default function EmployeeMaps() {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
         setModalVisible(true);
         return;
       }
@@ -52,14 +50,13 @@ export default function EmployeeMaps() {
         }
       }
     } catch (error) {
-      setErrorMsg("Error checking location services");
       setModalVisible(true);
     }
   }, [dispatch, user]);
 
   useEffect(() => {
     checkLocationServices();
-    const locationInterval = setInterval(checkLocationServices, 1000);
+    const locationInterval = setInterval(checkLocationServices, 10000);
 
     return () => clearInterval(locationInterval);
   }, [checkLocationServices]);
@@ -84,7 +81,7 @@ export default function EmployeeMaps() {
   };
 
   const postLocation = async (location: any) => {
-    console.log("Sending Current Location Employee 📍");
+    console.log("Employee Location Sending 📍");
     try {
       const response = await BaseUrl.post("/api/v1/create-location", {
         userId: user?._id,
@@ -94,7 +91,7 @@ export default function EmployeeMaps() {
         longitudeDelta: location.longitudeDelta ?? 0.005,
       });
     } catch (error) {
-      console.error("Error posting location:", error);
+      console.log("Error posting location", error);
     }
   };
   if (!location && !loading) {

@@ -58,7 +58,9 @@ const home = () => {
               </Text>
             </View>
           </View>
-
+          <Text className="text-lg mb-3 mt-2 p-1 capitalize">
+            Hello {user.name} !
+          </Text>
           <TouchableOpacity onPress={() => router.push("/chat-list")}>
             <View className="flex-row justify-between items-center bg-[#F8F8F8] p-4 rounded-lg mb-5">
               <Text className="text-lg">Chats</Text>
@@ -69,9 +71,7 @@ const home = () => {
               />
             </View>
           </TouchableOpacity>
-          <Text className="text-lg mb-3 mt-2 p-1 capitalize">
-            Hello {user.name} !
-          </Text>
+
           {user.role === EMPLOYEE && (
             <TouchableOpacity onPress={() => router.push("/location")}>
               <View className="flex-row justify-between items-center bg-[#F8F8F8] p-4 rounded-lg mb-5">
@@ -114,8 +114,9 @@ const home = () => {
                     Add Employee
                   </Text>
                 </TouchableOpacity>
+                {/* trace chats */}
                 <TouchableOpacity
-                  onPress={() => Alert.alert("Coming Soon")}
+                  onPress={() => router.push("/boss-trace-chats")}
                   className="w-[45%] bg-[#4DE4E1]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
                 >
                   <Image
@@ -127,6 +128,7 @@ const home = () => {
                     Trace Chats
                   </Text>
                 </TouchableOpacity>
+                {/* trace location */}
                 <TouchableOpacity
                   onPress={() => router.push("/location")}
                   className="w-[45%] bg-[#4DE4E1]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"

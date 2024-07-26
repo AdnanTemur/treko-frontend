@@ -13,6 +13,10 @@ const ChatLayout = () => {
         }}
       >
         <Stack.Screen name="employee-chat" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="boss-trace-chats"
+          options={{ headerShown: false }}
+        />
       </Stack>
       <StatusBar backgroundColor="#09648C" style="light" />
     </>

@@ -14,7 +14,7 @@ const useAsyncStorage = (key: any) => {
           setStoredValue(JSON.parse(value));
         }
       } catch (error) {
-        console.error(
+        console.log(
           `Error fetching data from AsyncStorage with key ${key}:`,
           error
         );
