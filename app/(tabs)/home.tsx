@@ -14,19 +14,14 @@ import { Redirect, router } from "expo-router";
 import Loader from "@/components/Loader";
 import { BOSS, EMPLOYEE } from "@/constants/enums";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSelector } from "react-redux";
-import { RootState } from "@/toolkit/store";
 
 const home = () => {
   // hooks
   const [user, loading]: any = useAsyncStorage("@user");
-  const { locationEnabled } = useSelector((state: RootState) => state.location);
 
   //state
   if (loading) return <Loader isLoading={loading} />;
   if (!loading && !user) return <Redirect href="/sign-in" />;
-  if (!loading && user && !locationEnabled)
-    return <Redirect href="/location" />;
 
   return (
     <SafeAreaView className="bg-white h-full">
@@ -117,7 +112,7 @@ const home = () => {
                 {/* trace chats */}
                 <TouchableOpacity
                   onPress={() => router.push("/boss-trace-chats")}
-                  className="w-[45%] bg-[#4DE4E1]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
+                  className="w-[45%] bg-[#09648C]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
                 >
                   <Image
                     resizeMode="contain"
@@ -131,7 +126,7 @@ const home = () => {
                 {/* trace location */}
                 <TouchableOpacity
                   onPress={() => router.push("/location")}
-                  className="w-[45%] bg-[#4DE4E1]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
+                  className="w-[45%] bg-[#F48A3C]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
                 >
                   <Image
                     resizeMode="contain"

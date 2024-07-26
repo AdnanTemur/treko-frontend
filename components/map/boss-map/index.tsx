@@ -184,7 +184,6 @@ const BossMap = () => {
               <Callout>
                 <View>
                   <Text style={styles.name}>{empLocation.userDetail.name}</Text>
-                  <Text>{empLocation.userDetail.email}</Text>
                 </View>
               </Callout>
             </Marker>
