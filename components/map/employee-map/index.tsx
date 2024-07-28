@@ -9,6 +9,7 @@ import {
   Platform,
   Linking,
   Image,
+  Dimensions,
 } from "react-native";
 import MapView, { Marker, Callout } from "react-native-maps";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -18,6 +19,8 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { setLocationEnabled } from "@/toolkit/slice/locationSlice";
 import { useDispatch } from "react-redux";
 import BaseUrl from "@/utils/config/baseUrl";
+
+const { width, height } = Dimensions.get("window");
 
 export default function EmployeeMaps() {
   const [user, loading]: any = useAsyncStorage("@user");
@@ -94,6 +97,7 @@ export default function EmployeeMaps() {
       console.log("Error posting location", error);
     }
   };
+
   if (!location && !loading) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -127,36 +131,38 @@ export default function EmployeeMaps() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <MapView
-        ref={mapRef}
-        style={styles.map}
-        initialRegion={{
-          latitude: location?.latitude ?? 0,
-          longitude: location?.longitude ?? 0,
-          latitudeDelta: 0.005,
-          longitudeDelta: 0.005,
-        }}
-        showsUserLocation={true}
-      >
-        {user && location && (
-          <Marker
-            onPress={recenterMap}
-            coordinate={{
-              latitude: location.latitude,
-              longitude: location.longitude,
-            }}
-          >
-            <View style={styles.marker}>
-              <Image source={{ uri: user?.avatar }} style={styles.avatar} />
-            </View>
-            <Callout>
-              <View>
-                <Text style={styles.name}>{user?.name}</Text>
+      <View style={styles.mapContainer}>
+        <MapView
+          ref={mapRef}
+          style={styles.map}
+          initialRegion={{
+            latitude: location?.latitude ?? 0,
+            longitude: location?.longitude ?? 0,
+            latitudeDelta: 0.005,
+            longitudeDelta: 0.005,
+          }}
+          showsUserLocation={true}
+        >
+          {user && location && (
+            <Marker
+              onPress={recenterMap}
+              coordinate={{
+                latitude: location.latitude,
+                longitude: location.longitude,
+              }}
+            >
+              <View style={styles.marker}>
+                <Image source={{ uri: user?.avatar }} style={styles.avatar} />
               </View>
-            </Callout>
-          </Marker>
-        )}
-      </MapView>
+              <Callout>
+                <View>
+                  <Text style={styles.name}>{user?.name}</Text>
+                </View>
+              </Callout>
+            </Marker>
+          )}
+        </MapView>
+      </View>
       <View style={styles.buttonContainer}>
         <Entypo
           name="location-pin"
@@ -178,9 +184,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
+  mapContainer: {
+    width: width,
+    height: height,
+  },
   map: {
-    width: "100%",
+    flex: 1,
     height: "100%",
+    width: "100%",
   },
   marker: {
     alignItems: "center",
