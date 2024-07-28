@@ -132,7 +132,7 @@ export default function EmployeeMaps() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.mapContainer}>
-        <MapView
+        {/* <MapView
           ref={mapRef}
           style={styles.map}
           initialRegion={{
@@ -161,7 +161,7 @@ export default function EmployeeMaps() {
               </Callout>
             </Marker>
           )}
-        </MapView>
+        </MapView> */}
       </View>
       <View style={styles.buttonContainer}>
         <Entypo
