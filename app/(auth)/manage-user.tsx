@@ -14,8 +14,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import BaseUrl from "@/utils/config/baseUrl";
 import Loader from "@/components/Loader";
 import ToastManager, { Toast } from "toastify-react-native";
-
-const ChatList = () => {
+import { AntDesign } from "@expo/vector-icons";
+const ManageUsers = () => {
   // hooks
   const router = useRouter();
   const [user, isLoading]: any = useAsyncStorage("@user");
@@ -25,7 +25,8 @@ const ChatList = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await BaseUrl.get("api/v1/get-all-users");
+      const response = await BaseUrl.get("api/v1/get-all-employees");
+
       // Filter out the current user from the list
       const filteredEmployees = response.data.employees.filter(
         (employee: any) => employee._id !== user?._id
@@ -54,7 +55,7 @@ const ChatList = () => {
   const handleEmployeePress = (employee: any) => {
     const serializedEmployees = JSON.stringify(employee?._id);
     router.push({
-      pathname: `/employee-chat`,
+      pathname: `/profile`,
       params: { employeeId: serializedEmployees },
     });
   };
@@ -77,15 +78,8 @@ const ChatList = () => {
           <Text className="text-sm text-gray-600 capitalize">
             {item.role || "Employee"}
           </Text>
-          <Text className="text-sm text-gray-600">
-            {item.workTime || "8:00 am - 5:00 pm"}
-          </Text>
         </View>
-        <Image
-          resizeMode="contain"
-          className="w-6 h-6"
-          source={icons.rightarrow}
-        />
+        <AntDesign name="edit" size={24} color="black" />
       </View>
     </TouchableOpacity>
   );
@@ -96,22 +90,27 @@ const ChatList = () => {
       <View className="flex-1 p-5 bg-white">
         <View className="flex-row justify-between items-center mb-10">
           <TouchableOpacity onPress={() => router.push("/location")}>
-            <Image
-              resizeMode="contain"
-              className="w-5 h-5"
-              source={icons.whitepeople}
+            <AntDesign
+              onPress={() => router.push("/home")}
+              name="arrowleft"
+              size={24}
+              color="black"
             />
           </TouchableOpacity>
           <Text className="text-2xl text-primary font-bold">
-            List Of Employees
+            Manage Employees
           </Text>
-          <TouchableOpacity onPress={() => router.push("/location")}>
+          <View className="flex items-center">
             <Image
-              resizeMode="contain"
-              className="w-5 h-5"
-              source={icons.bell}
+              source={{
+                uri: user?.avatar,
+              }}
+              className="w-10 h-10 rounded-full"
             />
-          </TouchableOpacity>
+            <Text className="text-[14px] capitalize font-bold">
+              {user && user?.name}
+            </Text>
+          </View>
         </View>
         <TextInput
           placeholder="Search Employees"
@@ -129,4 +128,4 @@ const ChatList = () => {
   );
 };
 
-export default ChatList;
+export default ManageUsers;
