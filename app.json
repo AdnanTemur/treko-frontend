@@ -25,7 +25,10 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.noumandatu.trekofrontend",
-      "permissions": ["ACCESS_FINE_LOCATION"]
+      "permissions": ["ACCESS_FINE_LOCATION"],
+      "config": {
+        "googleMaps": { "apiKey": "AIzaSyBwtwe3OIcZ-zFRXxFveIY9fd13wItZdj0" }
+      }
     },
     "web": {
       "bundler": "metro",
