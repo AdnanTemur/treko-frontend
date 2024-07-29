@@ -120,6 +120,7 @@ const ChatList = () => {
           className="border border-gray-300 rounded-lg p-2 mb-4"
         />
         <FlatList
+          showsVerticalScrollIndicator={false}
           data={filteredEmployees}
           renderItem={renderItem}
           keyExtractor={(item: any) => item._id}

@@ -7,8 +7,9 @@ import {
   TouchableOpacity,
   TextInput,
   Button,
+  ActivityIndicator,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ToastManager, { Toast } from "toastify-react-native";
 import Loader from "@/components/Loader";
@@ -125,6 +126,12 @@ const Profile = () => {
               marginBottom: 20,
             }}
           >
+            <AntDesign
+              onPress={() => router.back()}
+              name="arrowleft"
+              size={24}
+              color="black"
+            />
             <Text
               style={{
                 fontSize: 24,
@@ -270,7 +277,7 @@ const Profile = () => {
                   >
                     Email:
                   </Text>
-                  <Text style={{ fontSize: 18 }}>{user.email}</Text>
+                  <Text style={{ fontSize: 15 }}>{user.email}</Text>
                 </View>
                 <View
                   style={{
@@ -291,9 +298,11 @@ const Profile = () => {
             </View>
           )}
           {updateLoading ? (
-            <Text>Loading ...</Text>
+            <View style={{ marginTop: 50, marginBottom: 50 }}>
+              <ActivityIndicator size="large" color="#0000ff" />
+            </View>
           ) : (
-            <View style={{ marginTop: 10, marginBottom: 4 }}>
+            <View style={{ marginTop: 50, marginBottom: 50 }}>
               {(openImageUpdate || openInputField) && (
                 <Button title="Update Profile" onPress={handleUpdateProfile} />
               )}

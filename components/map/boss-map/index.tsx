@@ -162,7 +162,7 @@ const BossMap = () => {
         <MapView
           ref={mapRef}
           style={styles.map}
-          // showsUserLocation={true}
+          showsUserLocation={true}
           initialRegion={{
             latitude: location?.latitude ? location?.latitude : 35.9137173,
             longitude: location?.longitude ? location?.longitude : 74.355994,
