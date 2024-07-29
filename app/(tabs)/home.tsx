@@ -16,6 +16,7 @@ import { BOSS, EMPLOYEE } from "@/constants/enums";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector } from "react-redux";
 import { RootState } from "@/toolkit/store";
+import Greeting from "@/components/Greeting";
 
 const home = () => {
   // hooks
@@ -58,9 +59,19 @@ const home = () => {
               </Text>
             </View>
           </View>
-          <Text className="text-lg mb-3 mt-2 p-1 capitalize">
-            Hello {user.name} !
-          </Text>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}
+            className="mt-4 mb-4"
+          >
+            <Text className="text-xl font-bold mb-3 mt-2 p-1 capitalize">
+              Hello {user.name} !
+            </Text>
+            <Greeting />
+          </View>
           <TouchableOpacity onPress={() => router.push("/chat-list")}>
             <View className="flex-row justify-between items-center bg-[#F8F8F8] p-4 rounded-lg mb-5">
               <Text className="text-lg">Chats</Text>
@@ -89,7 +100,7 @@ const home = () => {
             <>
               <View className="flex-row flex-wrap justify-between">
                 <TouchableOpacity
-                  onPress={() => Alert.alert("Coming Soon")}
+                  onPress={() => router.push("/manage-user")}
                   className="w-[45%] border-2  bg-[#F24369] border-[#d2dee4] p-5 rounded-lg items-center mb-5"
                 >
                   <Image
@@ -102,7 +113,7 @@ const home = () => {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => Alert.alert("Coming Soon")}
+                  onPress={() => router.push("/sign-up")}
                   className="w-[45%] bg-[#4DE4E1]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
                 >
                   <Image

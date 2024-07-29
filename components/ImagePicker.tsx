@@ -31,7 +31,7 @@ export default function ImagePickerExample({ setGetAvatar }: any) {
             size={100}
             color="black"
           />
-          <Text>Upload Image</Text>
+          <Text>Upload Avatar</Text>
         </>
       )}
 
