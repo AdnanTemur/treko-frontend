@@ -18,6 +18,7 @@ import Entypo from "@expo/vector-icons/Entypo";
 import { setLocationEnabled } from "@/toolkit/slice/locationSlice";
 import { useDispatch } from "react-redux";
 import BaseUrl from "@/utils/config/baseUrl";
+import Loader from "@/components/Loader";
 
 const BossMap = () => {
   const [user, loading] = useAsyncStorage("@user");
@@ -154,16 +155,14 @@ const BossMap = () => {
       </SafeAreaView>
     );
   }
-  if (!location) {
-    return <Text>Loading....</Text>;
-  }
+  if (loading) return <Loader isLoading={loading} />;
   return (
     <SafeAreaView style={styles.safeArea}>
       {location && location?.latitude && location?.longitude && (
         <MapView
           ref={mapRef}
           style={styles.map}
-          showsUserLocation={true}
+          // showsUserLocation={true}
           initialRegion={{
             latitude: location?.latitude ? location?.latitude : 35.9137173,
             longitude: location?.longitude ? location?.longitude : 74.355994,
@@ -173,24 +172,29 @@ const BossMap = () => {
         >
           {user &&
             location &&
+            employeeLocations &&
             employeeLocations.map((empLocation: any) => {
               return (
                 <Marker
-                  key={empLocation._id}
-                  coordinate={empLocation.coordinates}
-                  title={empLocation.userDetail.name}
-                  description={empLocation.userDetail.email}
+                  key={empLocation?._id}
+                  coordinate={empLocation?.coordinates}
+                  title={empLocation?.userDetail.name}
+                  description={empLocation?.userDetail.email}
                 >
                   <View style={styles.marker}>
                     <Image
-                      source={{ uri: empLocation.userDetail.avatar }}
+                      source={{
+                        uri: empLocation?.userDetail?.avatar
+                          ? empLocation?.userDetail?.avatar
+                          : "https://www.shutterstock.com/image-photo/red-apple-isolated-on-white-600nw-1727544364.jpg",
+                      }}
                       style={styles.avatar}
                     />
                   </View>
                   <Callout>
                     <View>
                       <Text style={styles.name}>
-                        {empLocation.userDetail.name}
+                        {empLocation?.userDetail?.name}
                       </Text>
                     </View>
                   </Callout>

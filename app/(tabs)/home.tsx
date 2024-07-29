@@ -102,7 +102,7 @@ const home = () => {
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => Alert.alert("Coming Soon")}
+                  onPress={() => router.push("/sign-up")}
                   className="w-[45%] bg-[#4DE4E1]  border-2 border-[#d2dee4]  p-5 rounded-lg items-center mb-5"
                 >
                   <Image

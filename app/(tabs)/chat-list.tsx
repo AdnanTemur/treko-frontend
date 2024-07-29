@@ -7,8 +7,6 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
-  Modal,
-  ScrollView,
   TextInput,
 } from "react-native";
 import useAsyncStorage from "@/hooks/useAuth";
@@ -22,8 +20,6 @@ const ChatList = () => {
   const router = useRouter();
   const [user, isLoading]: any = useAsyncStorage("@user");
   const [employees, setEmployees] = useState([]);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
   const [accessToken, loading]: any = useAsyncStorage("@access_token");
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -57,17 +53,14 @@ const ChatList = () => {
   }, [accessToken]);
 
   const handleEmployeePress = (employee: any) => {
-    setSelectedEmployee(employee);
-    setModalVisible(true);
-  };
-
-  const handleNavigate = () => {
-    const serializedEmployees = JSON.stringify(selectedEmployee?._id);
+    const serializedEmployees = JSON.stringify(employee?._id);
     router.push({
       pathname: `/employee-chat`,
       params: { employeeId: serializedEmployees },
     });
   };
+
+  const handleNavigate = () => {};
 
   if (loading || isLoading) return <Loader isLoading={isLoading || loading} />;
 
@@ -134,53 +127,6 @@ const ChatList = () => {
           renderItem={renderItem}
           keyExtractor={(item: any) => item._id}
         />
-
-        <Modal
-          visible={modalVisible}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View className="flex-1 justify-end items-center mb-20 w-full bg-black bg-opacity-50">
-            <View className="bg-white rounded-lg p-6 w-full">
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                className="absolute top-2 right-2"
-              >
-                <Text className="text-5xl">×</Text>
-              </TouchableOpacity>
-              <Text className="text-lg font-bold mb-4 text-center">
-                Trace employee
-              </Text>
-              <ScrollView>
-                <Text className="text-sm text-gray-600 mb-4 text-center">
-                  Lorem ipsum dolor sit amet consectetur. Sagittis pellentesque
-                  eu sem sodales ut. Lorem sed mi duis nibh at fringilla nunc
-                  consequat parturient. In aliquam quis aliquam libero in. Vel
-                  feugiat tempor eget faucibus lorem laoreet.
-                </Text>
-                <TouchableOpacity
-                  onPress={() => {
-                    setModalVisible(false);
-                    router.push("/location");
-                  }}
-                  className="bg-primary rounded-lg p-4 mb-4"
-                >
-                  <Text className="text-white text-center">Location</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={() => {
-                    setModalVisible(false);
-                    handleNavigate();
-                  }}
-                  className="bg-primary rounded-lg p-4"
-                >
-                  <Text className="text-white text-center">Chats</Text>
-                </TouchableOpacity>
-              </ScrollView>
-            </View>
-          </View>
-        </Modal>
       </View>
     </SafeAreaView>
   );

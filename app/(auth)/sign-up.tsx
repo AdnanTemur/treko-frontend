@@ -1,16 +1,27 @@
 import React, { useState } from "react";
 import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text, ScrollView, Image, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
 import FormField from "../../components/FormField";
 import { images } from "../../constants";
 import CustomButton from "@/components/CustomButton";
 import ImagePickerExample from "@/components/ImagePicker";
 import ToastManager, { Toast } from "toastify-react-native";
+import { AntDesign } from "@expo/vector-icons";
+import useAsyncStorage from "@/hooks/useAuth";
 
 const baseURL = `${process.env.EXPO_PUBLIC_BASEURL}/api/v1/register`;
 
 const SignUp = () => {
+  const [user, loading]: any = useAsyncStorage("@user");
+
   const [isSubmitting, setSubmitting] = useState(false);
   const [getAvatar, setGetAvatar] = useState<any>(null);
   const [form, setForm] = useState({
@@ -67,9 +78,6 @@ const SignUp = () => {
 
       if (response.ok) {
         Toast.success("User registered successfully", "top");
-        setTimeout(() => {
-          router.replace("/sign-in");
-        }, 1000);
       } else {
         Toast.error(data?.message || "Registration failed", "top");
       }
@@ -84,12 +92,25 @@ const SignUp = () => {
       <ToastManager />
       <ScrollView>
         <View className="h-10" />
-        <View className="w-full flex justify-center items-center h-full ">
-          <View className="flex flex-row items-center">
-            <Image source={images.logo} className="w-[60px] h-[60px]" />
-            <Text className="text-2xl font-semibold text-black  font-psemibold">
-              Treko Registration
-            </Text>
+        <View className="w-full   h-full ">
+          <View className="flex-row justify-between items-between mb-10">
+            <TouchableOpacity>
+              <AntDesign
+                onPress={() => router.push("/home")}
+                name="arrowleft"
+                size={24}
+                color="black"
+              />
+            </TouchableOpacity>
+            <Text className="text-2xl font-bold">Add Employee's</Text>
+            <View className="flex items-center">
+              <Image
+                source={{
+                  uri: user?.avatar,
+                }}
+                className="w-10 h-10 rounded-full"
+              />
+            </View>
           </View>
           <ImagePickerExample setGetAvatar={setGetAvatar} />
           <FormField
@@ -137,7 +158,7 @@ const SignUp = () => {
             />
           ) : (
             <CustomButton
-              title="Register"
+              title="Add Employee"
               handlePress={submit}
               containerStyles="mt-4 w-full"
               isLoading={isSubmitting}
@@ -154,12 +175,6 @@ const SignUp = () => {
             {" "}
             <Text> Login?</Text>
           </Link>
-
-          <View className="flex justify-center pt-5 flex-row gap-2">
-            <Link href="/sign-in" className="text-sm text-blacks font-pregular">
-              Already have an account?
-            </Link>
-          </View>
         </View>
       </ScrollView>
     </SafeAreaView>

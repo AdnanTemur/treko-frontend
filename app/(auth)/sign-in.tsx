@@ -109,6 +109,7 @@ const SignIn = () => {
             otherStyles={{ marginTop: 20 }}
             secureTextEntry={true}
           />
+          <View className="h-10" />
           {isSubmitting ? (
             <ActivityIndicator
               size="large"
@@ -116,24 +117,8 @@ const SignIn = () => {
               style={{ marginTop: 20 }}
             />
           ) : (
-            <CustomButton
-              title="Log In"
-              handlePress={submit}
-              containerStyles={{ marginTop: 20 }}
-            />
+            <CustomButton title="Log In" handlePress={submit} />
           )}
-          <Link
-            href="/sign-up"
-            className="text-sm text-dark mt-4 font-psemibold text-center"
-          >
-            <Text>Don't have an account?</Text>
-          </Link>
-          <Link
-            href="/sign-up"
-            className="text-sm text-primary font-psemibold text-center"
-          >
-            <Text>Sign Up</Text>
-          </Link>
         </View>
       </ScrollView>
     </SafeAreaView>
