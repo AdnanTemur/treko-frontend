@@ -4,6 +4,7 @@ import {
   Text,
   View,
   FlatList,
+  SectionList,
   ActivityIndicator,
   Image,
   TouchableOpacity,
@@ -12,15 +13,13 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import BaseUrl from "@/utils/config/baseUrl";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import useAsyncStorage from "@/hooks/useAuth";
-import { router } from "expo-router";
 
 const BossTraceChats = () => {
-  // hooks
   const [user]: any = useAsyncStorage("@user");
 
   const [employees, setEmployees] = useState([]);
   const [selectedPair, setSelectedPair] = useState<any>(null);
-  const [chatHistory, setChatHistory] = useState<any>([]);
+  const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [emptyStateMessage, setEmptyStateMessage] = useState("");
 
@@ -28,9 +27,10 @@ const BossTraceChats = () => {
     const fetchEmployees = async () => {
       try {
         const { data } = await BaseUrl.get("/api/v1/get-all-employees");
-        setEmployees(data.employees);
+        setEmployees(data?.employees || []);
       } catch (error) {
         console.log("Error fetching employees:", error);
+        setEmptyStateMessage("Error fetching employees.");
       }
     };
 
@@ -56,23 +56,32 @@ const BossTraceChats = () => {
         );
 
         if (status === 200) {
-          const combinedChats = data
-            .flatMap((chat: any) => [
-              ...(chat.messageSent || []).map((msg: any) => ({
-                ...msg,
-                senderId: chat.userId,
-              })),
-              ...(chat.messageReceived || []).map((msg: any) => ({
-                ...msg,
-                receiverId: chat.userId,
-              })),
-            ])
-            .sort(
-              (a: any, b: any) => new Date(a.timestamp) - new Date(b.timestamp)
-            );
+          const employee1Id = selectedPair[0]._id;
+          const employee2Id = selectedPair[1]._id;
 
-          setChatHistory(combinedChats);
-          if (combinedChats.length === 0) {
+          // Extract messageReceived arrays for both employees
+          const employee1Received =
+            data.find((chat: any) => chat.userId === employee1Id)
+              ?.messageReceived || [];
+          const employee2Received =
+            data.find((chat: any) => chat.userId === employee2Id)
+              ?.messageReceived || [];
+
+          setChatHistory([
+            ...employee1Received.map((msg: any) => ({
+              ...msg,
+              user: "employee1",
+            })),
+            ...employee2Received.map((msg: any) => ({
+              ...msg,
+              user: "employee2",
+            })),
+          ]);
+
+          if (
+            employee1Received.length === 0 &&
+            employee2Received.length === 0
+          ) {
             setEmptyStateMessage("No chats found between these employees.");
           }
         } else {
@@ -92,7 +101,6 @@ const BossTraceChats = () => {
     fetchChatHistory();
   }, [selectedPair]);
 
-  // Utility function to generate pairs
   const generatePairs = (employees: any[]) => {
     const pairs = [];
     for (let i = 0; i < employees.length - 1; i++) {
@@ -105,91 +113,74 @@ const BossTraceChats = () => {
 
   const pairs = generatePairs(employees);
 
+  const renderChatItem = ({ item }: { item: any }) => (
+    <View
+      style={[
+        styles.chatItem,
+        item.user === "employee1" ? styles.received : styles.sent,
+      ]}
+    >
+      <Text>{item.text}</Text>
+      <Text style={styles.timestamp}>
+        {new Date(item.timestamp).toLocaleString()}
+      </Text>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.container}>
-      <View className="flex-row justify-between items-center mb-10">
-        <TouchableOpacity>
-          <AntDesign
-            onPress={() => setSelectedPair(null)}
-            name="arrowleft"
-            size={24}
-            color="black"
-          />
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => setSelectedPair(null)}>
+          <AntDesign name="arrowleft" size={24} color="black" />
         </TouchableOpacity>
-        <Text className="text-2xl font-bold">Employee Chats</Text>
-        <View className="flex items-center">
-          <Image
-            source={{
-              uri: user?.avatar,
-            }}
-            className="w-10 h-10 rounded-full"
-          />
-          <Text className="text-[14px] capitalize font-bold">
-            {user && user?.name}
-          </Text>
+        <Text style={styles.title}>Employee Chats</Text>
+        <View style={styles.userInfo}>
+          <Image source={{ uri: user?.avatar }} style={styles.avatar} />
+          <Text style={styles.username}>{user?.name}</Text>
         </View>
       </View>
+      {employees.length === 0 && !loading && (
+        <Text style={styles.emptyText}>No Employee found</Text>
+      )}
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : emptyStateMessage ? (
-        <Text style={styles.emptyState}>{emptyStateMessage}</Text>
-      ) : (
-        <View>
-          {!selectedPair && (
-            <FlatList
-              showsVerticalScrollIndicator={false}
-              data={pairs}
-              keyExtractor={(item, index) => `${item[0]._id}-${item[1]._id}`}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={styles.card}
-                  onPress={() => setSelectedPair(item)}
-                >
-                  <View style={styles.cardContent}>
-                    <Image
-                      source={{ uri: item[0].avatar }}
-                      style={styles.avatar}
-                    />
-                    <View style={styles.info}>
-                      <Text style={styles.name}>{item[0].name}</Text>
-                      <Text style={styles.role}>{item[0].role}</Text>
-                    </View>
-                  </View>
-                  <View style={styles.cardContent}>
-                    <Image
-                      source={{ uri: item[1].avatar }}
-                      style={styles.avatar}
-                    />
-                    <View style={styles.info}>
-                      <Text style={styles.name}>{item[1].name}</Text>
-                      <Text style={styles.role}>{item[1].role}</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              )}
-            />
+        <Text style={styles.emptyText}>{emptyStateMessage}</Text>
+      ) : !selectedPair ? (
+        <SectionList
+          sections={[{ title: "Employee Pairs", data: pairs }]}
+          keyExtractor={(item, index) => `${item[0]._id}-${item[1]._id}`}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => setSelectedPair(item)}
+            >
+              <View style={styles.cardContent}>
+                <Image source={{ uri: item[0].avatar }} style={styles.avatar} />
+                <View style={styles.info}>
+                  <Text style={styles.name}>{item[0].name}</Text>
+                  <Text style={styles.role}>{item[0].role}</Text>
+                </View>
+              </View>
+              <View style={styles.cardContent}>
+                <Image source={{ uri: item[1].avatar }} style={styles.avatar} />
+                <View style={styles.info}>
+                  <Text style={styles.name}>{item[1].name}</Text>
+                  <Text style={styles.role}>{item[1].role}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
           )}
-        </View>
-      )}
-      {selectedPair && (
+          renderSectionHeader={({ section: { title } }) => (
+            <Text style={styles.sectionHeader}>{title}</Text>
+          )}
+        />
+      ) : (
         <FlatList
           data={chatHistory}
           keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <View
-              style={[
-                styles.chatItem,
-                item.senderId === selectedPair[0]._id
-                  ? styles.sent
-                  : styles.received,
-              ]}
-            >
-              <Text>{item.text}</Text>
-              <Text style={styles.timestamp}>
-                {new Date(item.timestamp).toLocaleString()}
-              </Text>
-            </View>
-          )}
+          renderItem={renderChatItem}
+          contentContainerStyle={styles.chatContainer}
         />
       )}
     </SafeAreaView>
@@ -201,10 +192,38 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
   },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 10,
+  },
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 16,
+  },
+  userInfo: {
+    alignItems: "center",
+  },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+  },
+  username: {
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "blue",
+    textAlign: "center",
+    marginTop: 20,
+  },
+  sectionHeader: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginVertical: 8,
   },
   card: {
     flexDirection: "row",
@@ -219,33 +238,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  avatar: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    marginRight: 16,
-  },
   info: {
     justifyContent: "center",
   },
   name: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: "bold",
   },
   role: {
     color: "#777",
-    fontSize: 10,
-  },
-  time: {
-    color: "#777",
+    fontSize: 12,
   },
   chatItem: {
     padding: 8,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
     marginBottom: 4,
-    maxWidth: "80%",
     borderRadius: 8,
+    maxWidth: "80%",
   },
   sent: {
     alignSelf: "flex-end",
@@ -260,11 +270,9 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: "right",
   },
-  emptyState: {
-    fontSize: 16,
-    color: "blue",
-    textAlign: "center",
-    marginTop: 20,
+  chatContainer: {
+    flexGrow: 1,
+    paddingBottom: 20,
   },
 });
 

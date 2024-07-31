@@ -41,7 +41,6 @@ const ManageUsers = () => {
 
       setEmployees(sortedEmployees);
     } catch (error) {
-      Toast.error("Failed to fetch employees", "top");
       console.log(error);
     }
   };
@@ -83,10 +82,11 @@ const ManageUsers = () => {
       </View>
     </TouchableOpacity>
   );
-
+  console.log(employees, "filteredEmployees");
   return (
     <SafeAreaView className="bg-white h-full">
       <ToastManager />
+
       <View className="flex-1 p-5 bg-white">
         <View className="flex-row justify-between items-center mb-10">
           <TouchableOpacity onPress={() => router.push("/location")}>
@@ -118,6 +118,12 @@ const ManageUsers = () => {
           onChangeText={setSearchQuery}
           className="border border-gray-300 rounded-lg p-2 mb-4"
         />
+        {employees.length === 0 && (
+          <Text className="text-xl text-center font-bold text-blue-400 mt-3">
+            No Employee found
+          </Text>
+        )}
+
         <FlatList
           showsVerticalScrollIndicator={false}
           data={filteredEmployees}

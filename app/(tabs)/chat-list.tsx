@@ -40,16 +40,21 @@ const ChatList = () => {
 
       setEmployees(sortedEmployees);
     } catch (error) {
-      Toast.error("Failed to fetch employees", "top");
       console.log(error);
     }
   };
+
+  // useEffect(() => {
+  //   if (accessToken) {
+  //     fetchEmployees();
+  //   }
+  // }, [accessToken]);
 
   useEffect(() => {
     if (accessToken) {
       fetchEmployees();
     }
-  }, [accessToken]);
+  });
 
   const handleEmployeePress = (employee: any) => {
     const serializedEmployees = JSON.stringify(employee?._id);
@@ -119,6 +124,11 @@ const ChatList = () => {
           onChangeText={setSearchQuery}
           className="border border-gray-300 rounded-lg p-2 mb-4"
         />
+        {employees.length === 0 && (
+          <Text className="text-xl text-center font-bold text-blue-400 mt-3">
+            No Employee found
+          </Text>
+        )}
         <FlatList
           showsVerticalScrollIndicator={false}
           data={filteredEmployees}

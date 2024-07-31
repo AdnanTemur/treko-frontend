@@ -56,14 +56,14 @@ const Setting = () => {
                   </View>
                 )}
               </View>
-              <View className="border-t border-b border-gray-200">
+              <View className="border-t border-b border-gray-200 ">
                 <View className="flex-row py-2 px-4">
                   <Text className="font-bold w-24 text-xl">Name:</Text>
                   <Text className="text-lg">{user.name}</Text>
                 </View>
                 <View className="flex-row py-2 px-4 bg-gray-50">
                   <Text className="font-bold w-24 text-xl">Email:</Text>
-                  <Text className="text-lg">{user.email}</Text>
+                  <Text className="text-lg w-[220px]">{user.email}</Text>
                 </View>
                 <View className="flex-row py-2 px-4">
                   <Text className="font-bold w-24 text-xl">Role:</Text>
