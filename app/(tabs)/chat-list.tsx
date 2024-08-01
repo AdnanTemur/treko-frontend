@@ -8,12 +8,14 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import useAsyncStorage from "@/hooks/useAuth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BaseUrl from "@/utils/config/baseUrl";
 import Loader from "@/components/Loader";
 import ToastManager, { Toast } from "toastify-react-native";
+import { primary } from "@/constants/colors";
 
 const ChatList = () => {
   // hooks
@@ -125,9 +127,7 @@ const ChatList = () => {
           className="border border-gray-300 rounded-lg p-2 mb-4"
         />
         {employees.length === 0 && (
-          <Text className="text-xl text-center font-bold text-blue-400 mt-3">
-            No Employee found
-          </Text>
+          <ActivityIndicator size="large" color={primary} />
         )}
         <FlatList
           showsVerticalScrollIndicator={false}

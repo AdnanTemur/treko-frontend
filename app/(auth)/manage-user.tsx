@@ -8,6 +8,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import useAsyncStorage from "@/hooks/useAuth";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -15,6 +16,7 @@ import BaseUrl from "@/utils/config/baseUrl";
 import Loader from "@/components/Loader";
 import ToastManager, { Toast } from "toastify-react-native";
 import { AntDesign } from "@expo/vector-icons";
+import { primary } from "@/constants/colors";
 const ManageUsers = () => {
   // hooks
   const router = useRouter();
@@ -82,7 +84,6 @@ const ManageUsers = () => {
       </View>
     </TouchableOpacity>
   );
-  console.log(employees, "filteredEmployees");
   return (
     <SafeAreaView className="bg-white h-full">
       <ToastManager />
@@ -119,9 +120,7 @@ const ManageUsers = () => {
           className="border border-gray-300 rounded-lg p-2 mb-4"
         />
         {employees.length === 0 && (
-          <Text className="text-xl text-center font-bold text-blue-400 mt-3">
-            No Employee found
-          </Text>
+          <ActivityIndicator size="large" color={primary} />
         )}
 
         <FlatList

@@ -13,6 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import BaseUrl from "@/utils/config/baseUrl";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import useAsyncStorage from "@/hooks/useAuth";
+import { primary } from "@/constants/colors";
 
 const BossTraceChats = () => {
   const [user]: any = useAsyncStorage("@user");
@@ -140,7 +141,7 @@ const BossTraceChats = () => {
         </View>
       </View>
       {employees.length === 0 && !loading && (
-        <Text style={styles.emptyText}>No Employee found</Text>
+        <ActivityIndicator size="large" color={primary} />
       )}
       {loading ? (
         <ActivityIndicator size="large" color="#0000ff" />
