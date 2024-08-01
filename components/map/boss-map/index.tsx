@@ -58,7 +58,7 @@ const BossMap = () => {
 
   useEffect(() => {
     checkLocationServices();
-    const locationInterval = setInterval(checkLocationServices, 10000);
+    const locationInterval = setInterval(checkLocationServices, 60000);
     return () => clearInterval(locationInterval);
   }, [checkLocationServices]);
 

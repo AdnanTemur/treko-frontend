@@ -18,20 +18,25 @@ import { primary } from "@/constants/colors";
 const BossTraceChats = () => {
   const [user]: any = useAsyncStorage("@user");
 
-  const [employees, setEmployees] = useState([]);
+  const [employees, setEmployees] = useState<any>([]);
+  const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
   const [selectedPair, setSelectedPair] = useState<any>(null);
   const [chatHistory, setChatHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [loadingChats, setLoadingChats] = useState(false);
   const [emptyStateMessage, setEmptyStateMessage] = useState("");
 
   useEffect(() => {
     const fetchEmployees = async () => {
+      setLoading(true);
       try {
         const { data } = await BaseUrl.get("/api/v1/get-all-employees");
         setEmployees(data?.employees || []);
       } catch (error) {
         console.log("Error fetching employees:", error);
         setEmptyStateMessage("Error fetching employees.");
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -42,8 +47,8 @@ const BossTraceChats = () => {
     const fetchChatHistory = async () => {
       if (!selectedPair) return;
 
-      setLoading(true);
-      setEmptyStateMessage(""); // Clear previous messages
+      setLoadingChats(true);
+      setEmptyStateMessage("");
 
       try {
         const { data, status } = await BaseUrl.get(
@@ -95,24 +100,22 @@ const BossTraceChats = () => {
         );
         setEmptyStateMessage("Error fetching chat history.");
       } finally {
-        setLoading(false);
+        setLoadingChats(false);
       }
     };
 
     fetchChatHistory();
   }, [selectedPair]);
 
-  const generatePairs = (employees: any[]) => {
-    const pairs = [];
-    for (let i = 0; i < employees.length - 1; i++) {
-      for (let j = i + 1; j < employees.length; j++) {
-        pairs.push([employees[i], employees[j]]);
-      }
-    }
-    return pairs;
+  const generatePairs = (employees: any[], selectedEmployee: any) => {
+    return employees
+      .filter((employee) => employee._id !== selectedEmployee._id)
+      .map((employee) => [selectedEmployee, employee]);
   };
 
-  const pairs = generatePairs(employees);
+  const pairs = selectedEmployee
+    ? generatePairs(employees, selectedEmployee)
+    : [];
 
   const renderChatItem = ({ item }: { item: any }) => (
     <View
@@ -131,43 +134,78 @@ const BossTraceChats = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => setSelectedPair(null)}>
-          <AntDesign name="arrowleft" size={24} color="black" />
-        </TouchableOpacity>
+        {selectedEmployee && (
+          <TouchableOpacity onPress={() => setSelectedEmployee(null)}>
+            <AntDesign name="arrowleft" size={24} color="black" />
+          </TouchableOpacity>
+        )}
         <Text style={styles.title}>Employee Chats</Text>
         <View style={styles.userInfo}>
           <Image source={{ uri: user?.avatar }} style={styles.avatar} />
           <Text style={styles.username}>{user?.name}</Text>
         </View>
       </View>
-      {employees.length === 0 && !loading && (
-        <ActivityIndicator size="large" color={primary} />
-      )}
-      {loading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
-      ) : emptyStateMessage ? (
-        <Text style={styles.emptyText}>{emptyStateMessage}</Text>
-      ) : !selectedPair ? (
+      {loading && <ActivityIndicator size="large" color={primary} />}
+      {emptyStateMessage ? (
+        <Text style={styles.emptyText}>
+          {emptyStateMessage && "No chats found"}
+        </Text>
+      ) : !selectedEmployee ? (
+        <FlatList
+          data={employees}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => setSelectedEmployee(item)}
+            >
+              <View style={styles.cardContent}>
+                <Image source={{ uri: item.avatar }} style={styles.avatar} />
+                <View style={styles.info}>
+                  <Text style={styles.name}>{item.name}</Text>
+                  <Text style={styles.role}>{item.role}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          )}
+        />
+      ) : selectedEmployee && !selectedPair ? (
         <SectionList
-          sections={[{ title: "Employee Pairs", data: pairs }]}
+          sections={[
+            { title: "Pairs with " + selectedEmployee.name, data: pairs },
+          ]}
           keyExtractor={(item, index) => `${item[0]._id}-${item[1]._id}`}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.card}
               onPress={() => setSelectedPair(item)}
             >
-              <View style={styles.cardContent}>
-                <Image source={{ uri: item[0].avatar }} style={styles.avatar} />
-                <View style={styles.info}>
-                  <Text style={styles.name}>{item[0].name}</Text>
-                  <Text style={styles.role}>{item[0].role}</Text>
+              <View style={styles.pairContent}>
+                <View style={styles.cardContent}>
+                  <Image
+                    source={{ uri: item[0].avatar }}
+                    style={styles.avatar}
+                  />
+                  <View style={styles.info}>
+                    <Text style={styles.name}>{item[0].name}</Text>
+                    <Text style={styles.role}>{item[0].role}</Text>
+                  </View>
                 </View>
-              </View>
-              <View style={styles.cardContent}>
-                <Image source={{ uri: item[1].avatar }} style={styles.avatar} />
-                <View style={styles.info}>
-                  <Text style={styles.name}>{item[1].name}</Text>
-                  <Text style={styles.role}>{item[1].role}</Text>
+                <AntDesign
+                  name="arrowright"
+                  size={24}
+                  color="black"
+                  style={styles.pairArrow}
+                />
+                <View style={styles.cardContent}>
+                  <Image
+                    source={{ uri: item[1].avatar }}
+                    style={styles.avatar}
+                  />
+                  <View style={styles.info}>
+                    <Text style={styles.name}>{item[1].name}</Text>
+                    <Text style={styles.role}>{item[1].role}</Text>
+                  </View>
                 </View>
               </View>
             </TouchableOpacity>
@@ -177,12 +215,18 @@ const BossTraceChats = () => {
           )}
         />
       ) : (
-        <FlatList
-          data={chatHistory}
-          keyExtractor={(item) => item._id}
-          renderItem={renderChatItem}
-          contentContainerStyle={styles.chatContainer}
-        />
+        <View>
+          {loadingChats ? (
+            <ActivityIndicator size="large" color={primary} />
+          ) : (
+            <FlatList
+              data={chatHistory}
+              keyExtractor={(item) => item._id}
+              renderItem={renderChatItem}
+              contentContainerStyle={styles.chatContainer}
+            />
+          )}
+        </View>
       )}
     </SafeAreaView>
   );
@@ -239,8 +283,17 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
+  pairContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  pairArrow: {
+    marginHorizontal: 8,
+  },
   info: {
     justifyContent: "center",
+    marginLeft: 10,
   },
   name: {
     fontSize: 14,
@@ -272,8 +325,7 @@ const styles = StyleSheet.create({
     textAlign: "right",
   },
   chatContainer: {
-    flexGrow: 1,
-    paddingBottom: 20,
+    paddingVertical: 8,
   },
 });
 
