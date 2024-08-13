@@ -129,7 +129,7 @@ const home = () => {
                     source={icons.chat}
                   />
                   <Text className="text-[14px] text-white mt-5">
-                    Trace Chats
+                    Chat History
                   </Text>
                 </TouchableOpacity>
                 {/* trace location */}

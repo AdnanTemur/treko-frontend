@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
   TextInput,
   ActivityIndicator,
+  Modal,
+  Button,
 } from "react-native";
 import useAsyncStorage from "@/hooks/useAuth";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -24,6 +26,10 @@ const ManageUsers = () => {
   const [employees, setEmployees] = useState([]);
   const [accessToken, loading]: any = useAsyncStorage("@access_token");
   const [searchQuery, setSearchQuery] = useState("");
+
+  // delete employee
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
 
   const fetchEmployees = async () => {
     try {
@@ -61,6 +67,19 @@ const ManageUsers = () => {
     });
   };
 
+  const deleteUser = async (employee: any) => {
+    try {
+      await BaseUrl.delete(`api/v1/delete-user/${employee._id}`);
+      setEmployees((prevEmployees) =>
+        prevEmployees.filter((emp) => emp._id !== employee._id)
+      );
+      Toast.success("User is deleted");
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+      Toast.error("Failed to delete user", "Failed");
+    }
+  };
+
   if (loading || isLoading) return <Loader isLoading={isLoading || loading} />;
 
   const filteredEmployees = employees.filter((employee: any) =>
@@ -68,7 +87,7 @@ const ManageUsers = () => {
   );
 
   const renderItem = ({ item }: any) => (
-    <TouchableOpacity onPress={() => handleEmployeePress(item)}>
+    <TouchableOpacity>
       <View className="flex-row justify-between items-center bg-[#F8F8F8] p-4 rounded-lg mb-4">
         <Image
           source={{ uri: item.avatar }}
@@ -80,14 +99,57 @@ const ManageUsers = () => {
             {item.role || "Employee"}
           </Text>
         </View>
-        <AntDesign name="edit" size={24} color="black" />
+        <AntDesign
+          onPress={() => handleEmployeePress(item)}
+          name="edit"
+          size={24}
+          color="black"
+        />
+        <AntDesign
+          onPress={() => {
+            setSelectedEmployee(item);
+            setModalVisible(true);
+          }}
+          style={{ marginLeft: 20 }}
+          name="delete"
+          size={24}
+          color="red"
+        />
       </View>
     </TouchableOpacity>
   );
   return (
     <SafeAreaView className="bg-white h-full">
       <ToastManager />
-
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View
+          style={{ opacity: 0.9 }}
+          className="flex-1  justify-center items-center bg-[#09648C] "
+        >
+          <View className="bg-white p-5 rounded-lg w-4/5">
+            <Text className="text-lg font-bold mb-5">Are you sure?</Text>
+            <View className="flex-row justify-around">
+              <Button
+                title="No"
+                color={"red"}
+                onPress={() => setModalVisible(false)}
+              />
+              <Button
+                title="Yes"
+                onPress={() => {
+                  deleteUser(selectedEmployee);
+                  setModalVisible(false);
+                }}
+              />
+            </View>
+          </View>
+        </View>
+      </Modal>
       <View className="flex-1 p-5 bg-white">
         <View className="flex-row justify-between items-center mb-10">
           <TouchableOpacity onPress={() => router.push("/location")}>
