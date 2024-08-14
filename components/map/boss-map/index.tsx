@@ -6,8 +6,7 @@ import {
   Modal,
   Text,
   TouchableOpacity,
-  Platform,
-  Linking,
+  FlatList,
   Image,
 } from "react-native";
 import MapView, { Marker, Callout } from "react-native-maps";
@@ -28,6 +27,7 @@ const BossMap = () => {
   const [location, setLocation] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState<any>(false);
   const [employeeLocations, setEmployeeLocations] = useState<any>([]);
+
   const checkLocationServices = useCallback(async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
@@ -58,7 +58,7 @@ const BossMap = () => {
 
   useEffect(() => {
     checkLocationServices();
-    const locationInterval = setInterval(checkLocationServices, 10000);
+    const locationInterval = setInterval(checkLocationServices, 60000);
     return () => clearInterval(locationInterval);
   }, [checkLocationServices]);
 
@@ -86,6 +86,7 @@ const BossMap = () => {
       console.log("Error fetching employee locations:", error);
     }
   };
+
   useEffect(() => {
     fetchEmployeeLocations();
   }, []);
@@ -102,11 +103,7 @@ const BossMap = () => {
   }, [location]);
 
   const handleOpenSettings = () => {
-    if (Platform.OS === "ios") {
-      Linking.openURL("app-settings:");
-    } else {
-      Linking.openSettings();
-    }
+    Linking.openURL("app-settings:");
   };
 
   const postLocation = async (location: any) => {
@@ -122,6 +119,17 @@ const BossMap = () => {
       });
     } catch (error) {
       console.log("Error posting location:", error);
+    }
+  };
+
+  const navigateToEmployeeLocation = (coordinates: any) => {
+    if (mapRef.current && coordinates) {
+      mapRef.current.animateToRegion({
+        latitude: coordinates.latitude,
+        longitude: coordinates.longitude,
+        latitudeDelta: coordinates.latitudeDelta * 0.001, // Zoom in
+        longitudeDelta: coordinates.longitudeDelta * 0.001, // Zoom in
+      });
     }
   };
 
@@ -155,7 +163,9 @@ const BossMap = () => {
       </SafeAreaView>
     );
   }
+
   if (loading) return <Loader isLoading={loading} />;
+
   return (
     <SafeAreaView style={styles.safeArea}>
       {location && location?.latitude && location?.longitude && (
@@ -204,6 +214,25 @@ const BossMap = () => {
         </MapView>
       )}
 
+      <View style={styles.employeeListContainer}>
+        <FlatList
+          data={employeeLocations}
+          keyExtractor={(item) => item._id}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.employeeItem}
+              onPress={() => navigateToEmployeeLocation(item.coordinates)}
+            >
+              <Image
+                source={{ uri: item.userDetail.avatar }}
+                style={styles.employeeAvatar}
+              />
+              <Text style={styles.employeeName}>{item.userDetail.name}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+
       <View style={styles.buttonContainer}>
         <Entypo
           name="location-pin"
@@ -242,37 +271,58 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 5,
   },
-  buttonContainer: {
+  employeeListContainer: {
     position: "absolute",
-    bottom: 20,
-    right: 20,
+    top: 40,
+    left: 10,
     backgroundColor: "white",
     padding: 10,
     borderRadius: 10,
     elevation: 5,
+    maxHeight: "50%", // Adjust as needed
+    width: 120, // Adjust width as needed
+  },
+  employeeItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  employeeAvatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    marginRight: 5,
+  },
+  employeeName: {
+    fontSize: 14,
+  },
+  buttonContainer: {
+    position: "absolute",
+    bottom: 20,
+    right: 20,
   },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: "80%",
     backgroundColor: "white",
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
+    elevation: 5,
   },
   modalText: {
-    fontSize: 16,
-    marginBottom: 20,
+    marginBottom: 15,
     textAlign: "center",
   },
   button: {
-    backgroundColor: "#007AFF",
-    padding: 10,
+    backgroundColor: "#007bff",
     borderRadius: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
   },
   buttonText: {
     color: "white",

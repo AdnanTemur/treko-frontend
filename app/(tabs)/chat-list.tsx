@@ -8,12 +8,14 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import useAsyncStorage from "@/hooks/useAuth";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BaseUrl from "@/utils/config/baseUrl";
 import Loader from "@/components/Loader";
 import ToastManager, { Toast } from "toastify-react-native";
+import { primary } from "@/constants/colors";
 
 const ChatList = () => {
   // hooks
@@ -40,16 +42,21 @@ const ChatList = () => {
 
       setEmployees(sortedEmployees);
     } catch (error) {
-      Toast.error("Failed to fetch employees", "top");
       console.log(error);
     }
   };
+
+  // useEffect(() => {
+  //   if (accessToken) {
+  //     fetchEmployees();
+  //   }
+  // }, [accessToken]);
 
   useEffect(() => {
     if (accessToken) {
       fetchEmployees();
     }
-  }, [accessToken]);
+  });
 
   const handleEmployeePress = (employee: any) => {
     const serializedEmployees = JSON.stringify(employee?._id);
@@ -119,6 +126,9 @@ const ChatList = () => {
           onChangeText={setSearchQuery}
           className="border border-gray-300 rounded-lg p-2 mb-4"
         />
+        {employees.length === 0 && (
+          <ActivityIndicator size="large" color={primary} />
+        )}
         <FlatList
           showsVerticalScrollIndicator={false}
           data={filteredEmployees}

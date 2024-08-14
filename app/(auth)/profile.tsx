@@ -49,7 +49,7 @@ const Profile = () => {
     try {
       setUpdateLoading(true);
 
-      const formData = new FormData();
+      const formData: any = new FormData();
 
       if (avatar) {
         const filename = avatar.split("/").pop();
@@ -152,22 +152,22 @@ const Profile = () => {
                   flexDirection: "row",
                   alignItems: "center",
                   justifyContent: "center",
-                  marginBottom: 20,
+                  marginBottom: 50,
                 }}
               >
                 {user.avatar ? (
                   <View
                     style={{
-                      flexDirection: "row",
                       alignItems: "center",
+                      marginTop: 30,
                     }}
                   >
                     {openImageUpdate ? (
                       <View
                         style={{
-                          width: 120,
-                          height: 120,
-                          borderRadius: 60,
+                          width: 150,
+                          height: 150,
+                          borderRadius: 100,
                           marginBottom: 10,
                         }}
                       >
@@ -177,20 +177,20 @@ const Profile = () => {
                       <Image
                         source={{ uri: user.avatar }}
                         style={{
-                          width: 120,
-                          height: 120,
-                          borderRadius: 60,
+                          width: 150,
+                          height: 150,
+                          borderRadius: 100,
                           marginBottom: 10,
                         }}
                       />
                     )}
-
-                    <AntDesign
-                      name="edit"
-                      size={24}
-                      color="black"
+                    <TouchableOpacity
                       onPress={() => setOpenImageUpdate(!openImageUpdate)}
-                    />
+                      className="flex flex-row mt-10"
+                    >
+                      <Text>Change Avatar</Text>
+                      <AntDesign name="edit" size={24} color="black" />
+                    </TouchableOpacity>
                   </View>
                 ) : (
                   <View
@@ -242,7 +242,7 @@ const Profile = () => {
                     <Text
                       style={{ fontWeight: "bold", fontSize: 20, width: "40%" }}
                     >
-                      Name:
+                      Name
                     </Text>
                     {openInputField ? (
                       <TextInput
@@ -275,9 +275,9 @@ const Profile = () => {
                   <Text
                     style={{ fontWeight: "bold", fontSize: 20, width: "40%" }}
                   >
-                    Email:
+                    Email
                   </Text>
-                  <Text style={{ fontSize: 15 }}>{user.email}</Text>
+                  <Text style={{ fontSize: 15, width: 200 }}>{user.email}</Text>
                 </View>
                 <View
                   style={{
@@ -290,7 +290,7 @@ const Profile = () => {
                   <Text
                     style={{ fontWeight: "bold", fontSize: 20, width: "40%" }}
                   >
-                    Role:
+                    Role
                   </Text>
                   <Text style={{ fontSize: 18 }}>{user.role}</Text>
                 </View>

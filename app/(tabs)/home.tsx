@@ -1,14 +1,7 @@
 import { icons } from "@/constants";
 import useAsyncStorage from "@/hooks/useAuth";
 import React from "react";
-import {
-  Text,
-  View,
-  TouchableOpacity,
-  Image,
-  ScrollView,
-  Alert,
-} from "react-native";
+import { Text, View, TouchableOpacity, Image, ScrollView } from "react-native";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import { Redirect, router } from "expo-router";
 import Loader from "@/components/Loader";
@@ -136,7 +129,7 @@ const home = () => {
                     source={icons.chat}
                   />
                   <Text className="text-[14px] text-white mt-5">
-                    Trace Chats
+                    Chat History
                   </Text>
                 </TouchableOpacity>
                 {/* trace location */}
