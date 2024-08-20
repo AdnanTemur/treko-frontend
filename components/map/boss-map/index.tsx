@@ -65,7 +65,11 @@ const BossMap = () => {
   const fetchEmployeeLocations = async () => {
     try {
       const response = await BaseUrl.get("/api/v1/get-all-locations");
-      const formattedLocations = response.data.locations.map((loc: any) => ({
+      const filteredLocations = response.data.locations.filter(
+        (loc: any) => loc.userDetail._id && loc.userDetail.avatar
+      );
+
+      const formattedLocations = filteredLocations.map((loc: any) => ({
         _id: loc._id,
         userDetail: {
           name: loc.userDetail.name,
@@ -80,8 +84,9 @@ const BossMap = () => {
           longitudeDelta: loc.coordinates.longitudeDelta ?? 0.005,
         },
       }));
+
       setEmployeeLocations(formattedLocations);
-      console.log("Retrieving All Employee Location  📌");
+      console.log("Retrieving All Employee Location 📌");
     } catch (error) {
       console.log("Error fetching employee locations:", error);
     }
@@ -96,8 +101,8 @@ const BossMap = () => {
       mapRef.current.animateToRegion({
         latitude: location.latitude,
         longitude: location.longitude,
-        latitudeDelta: location.latitudeDelta ?? 0.005,
-        longitudeDelta: location.longitudeDelta ?? 0.005,
+        latitudeDelta: location.latitudeDelta,
+        longitudeDelta: location.longitudeDelta,
       });
     }
   }, [location]);
@@ -108,15 +113,16 @@ const BossMap = () => {
 
   const postLocation = async (location: any) => {
     console.log("Boss Location Sending 📍");
-
+    const payload = {
+      userId: user?._id,
+      latitude: location.latitude,
+      longitude: location.longitude,
+      latitudeDelta: location.latitudeDelta ?? 0.005,
+      longitudeDelta: location.longitudeDelta ?? 0.005,
+    };
+    console.log(payload, "payload");
     try {
-      await BaseUrl.post("/api/v1/create-location", {
-        userId: user?._id,
-        latitude: location.latitude,
-        longitude: location.longitude,
-        latitudeDelta: location.latitudeDelta ?? 0.005,
-        longitudeDelta: location.longitudeDelta ?? 0.005,
-      });
+      await BaseUrl.post("/api/v1/create-location", payload);
     } catch (error) {
       console.log("Error posting location:", error);
     }
@@ -194,9 +200,7 @@ const BossMap = () => {
                   <View style={styles.marker}>
                     <Image
                       source={{
-                        uri: empLocation?.userDetail?.avatar
-                          ? empLocation?.userDetail?.avatar
-                          : "https://www.shutterstock.com/image-photo/red-apple-isolated-on-white-600nw-1727544364.jpg",
+                        uri: empLocation?.userDetail?.avatar,
                       }}
                       style={styles.avatar}
                     />
@@ -273,7 +277,7 @@ const styles = StyleSheet.create({
   },
   employeeListContainer: {
     position: "absolute",
-    top: 40,
+    top: 60,
     left: 10,
     backgroundColor: "white",
     padding: 10,
